@@ -55,4 +55,4 @@ jobs:
           else
             apikey=""
           fi
-          go test -v ./pkg/aali_graphdb/... -imagename "${{ matrix.image }}" -apikey "$apikey"
+          go test -v ./pkg/graphdb/... -imagename "${{ matrix.image }}" -apikey "$apikey"

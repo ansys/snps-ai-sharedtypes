@@ -30,11 +30,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ansys/aali-sharedtypes/pkg/aaliflowkitgrpc"
-	"github.com/ansys/aali-sharedtypes/pkg/clients"
-	"github.com/ansys/aali-sharedtypes/pkg/logging"
-	"github.com/ansys/aali-sharedtypes/pkg/sharedtypes"
-	"github.com/ansys/aali-sharedtypes/pkg/typeconverters"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/clients"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/flowkitgrpc"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/logging"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/typeconverters"
 	"github.com/google/uuid"
 
 	"google.golang.org/grpc"
@@ -63,7 +63,7 @@ func HealthCheck(url string, apiKey string) (err error) {
 	defer cancel()
 
 	// Call HealthCheck
-	_, err = c.HealthCheck(ctxWithCancel, &aaliflowkitgrpc.HealthRequest{})
+	_, err = c.HealthCheck(ctxWithCancel, &flowkitgrpc.HealthRequest{})
 	if err != nil {
 		return fmt.Errorf("error in external function gRPC HealthCheck: %v", err)
 	}
@@ -94,7 +94,7 @@ func GetVersion(url string, apiKey string) (version string, err error) {
 	defer cancel()
 
 	// Call GetVersion
-	resp, err := c.GetVersion(ctxWithCancel, &aaliflowkitgrpc.VersionRequest{})
+	resp, err := c.GetVersion(ctxWithCancel, &flowkitgrpc.VersionRequest{})
 	if err != nil {
 		return "", fmt.Errorf("error in external function gRPC GetVersion: %v", err)
 	}
@@ -137,7 +137,7 @@ func ListFunctionsAndSaveToInteralStates(url string, apiKey string) (err error) 
 	defer cancel()
 
 	// Call ListFunctions
-	listResp, err := c.ListFunctions(ctxWithCancel, &aaliflowkitgrpc.ListFunctionsRequest{})
+	listResp, err := c.ListFunctions(ctxWithCancel, &flowkitgrpc.ListFunctionsRequest{})
 	if err != nil {
 		return fmt.Errorf("error in external function gRPC ListFunctions: %v", err)
 	}
@@ -280,10 +280,10 @@ func RunFunction(ctx *logging.ContextMap, functionName string, inputs map[string
 	}
 
 	// Convert inputs to gRPC format based on order from function definition
-	grpcInputs := []*aaliflowkitgrpc.FunctionInput{}
+	grpcInputs := []*flowkitgrpc.FunctionInput{}
 	for _, inputDef := range functionDef.Inputs {
 		// create grpc input
-		grpcInput := &aaliflowkitgrpc.FunctionInput{
+		grpcInput := &flowkitgrpc.FunctionInput{
 			Name:   inputDef.Name,
 			GoType: inputDef.GoType,
 		}
@@ -311,7 +311,7 @@ func RunFunction(ctx *logging.ContextMap, functionName string, inputs map[string
 	}
 
 	// create a channel to send messages to the server
-	responseChannelToServer := make(chan *aaliflowkitgrpc.FunctionInputs)
+	responseChannelToServer := make(chan *flowkitgrpc.FunctionInputs)
 	defer close(responseChannelToServer)
 
 	// track pending approval instruction IDs for cleanup on error
@@ -324,7 +324,7 @@ func RunFunction(ctx *logging.ContextMap, functionName string, inputs map[string
 	}
 
 	// Send the initial message with function inputs
-	err = stream.Send(&aaliflowkitgrpc.FunctionInputs{
+	err = stream.Send(&flowkitgrpc.FunctionInputs{
 		Name:   functionName,
 		Inputs: grpcInputs,
 	})
@@ -355,7 +355,7 @@ func RunFunction(ctx *logging.ContextMap, functionName string, inputs map[string
 	}
 
 	// Receive the stream from the server
-	var runResp *aaliflowkitgrpc.FunctionOutputs
+	var runResp *flowkitgrpc.FunctionOutputs
 out:
 	for {
 		res, err := stream.Recv()
@@ -461,7 +461,7 @@ out:
 				}
 
 				// send the approval server reponse channel
-				responseChannelToServer <- &aaliflowkitgrpc.FunctionInputs{
+				responseChannelToServer <- &flowkitgrpc.FunctionInputs{
 					Type:             "approval_response",
 					InstructionId:    res.InstructionId,
 					ApprovalResponse: approvalResponse,
@@ -502,7 +502,7 @@ out:
 
 	// Update logging context with token counts from response trailers
 	responseTrailer := stream.Trailer()
-	if values := responseTrailer.Get("aali-logging-context"); len(values) > 0 {
+	if values := responseTrailer.Get("snps-ai-logging-context"); len(values) > 0 {
 		var body []map[string]interface{}
 		if err := json.Unmarshal([]byte(values[0]), &body); err == nil && len(body) > 0 {
 			tokenKeys := []logging.ContextKey{
@@ -586,10 +586,10 @@ func StreamFunction(ctx *logging.ContextMap, functionName string, inputs map[str
 	}
 
 	// Convert inputs to gRPC format based on order from function definition
-	grpcInputs := []*aaliflowkitgrpc.FunctionInput{}
+	grpcInputs := []*flowkitgrpc.FunctionInput{}
 	for _, inputDef := range functionDef.Inputs {
 		// create grpc input
-		grpcInput := &aaliflowkitgrpc.FunctionInput{
+		grpcInput := &flowkitgrpc.FunctionInput{
 			Name:   inputDef.Name,
 			GoType: inputDef.GoType,
 		}
@@ -629,7 +629,7 @@ func StreamFunction(ctx *logging.ContextMap, functionName string, inputs map[str
 	}
 
 	// Send the initial message with function inputs
-	err = stream.Send(&aaliflowkitgrpc.StreamInput{
+	err = stream.Send(&flowkitgrpc.StreamInput{
 		Name:   functionName,
 		Inputs: grpcInputs,
 	})
@@ -657,7 +657,7 @@ func StreamFunction(ctx *logging.ContextMap, functionName string, inputs map[str
 // Parameters:
 //   - stream: the stream from the server
 //   - streamChannel: the channel to send the stream to
-func receiveStreamFromServer(ctx *logging.ContextMap, stream aaliflowkitgrpc.ExternalFunctions_StreamFunctionClient, streamChannel *chan string, conn *grpc.ClientConn, cancel context.CancelFunc, functionName string) {
+func receiveStreamFromServer(ctx *logging.ContextMap, stream flowkitgrpc.ExternalFunctions_StreamFunctionClient, streamChannel *chan string, conn *grpc.ClientConn, cancel context.CancelFunc, functionName string) {
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -695,7 +695,7 @@ func receiveStreamFromServer(ctx *logging.ContextMap, stream aaliflowkitgrpc.Ext
 //   - stream: the bidirectional stream to the server
 //   - interruptChannel: the channel to receive interrupt messages from
 //   - functionName: the name of the function (for logging)
-func sendInterruptsToServer(ctx *logging.ContextMap, stream aaliflowkitgrpc.ExternalFunctions_StreamFunctionClient, interruptChannel *chan string, functionName string) {
+func sendInterruptsToServer(ctx *logging.ContextMap, stream flowkitgrpc.ExternalFunctions_StreamFunctionClient, interruptChannel *chan string, functionName string) {
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -717,7 +717,7 @@ func sendInterruptsToServer(ctx *logging.ContextMap, stream aaliflowkitgrpc.Exte
 				continue
 			}
 			// send the approval response to the server
-			err = stream.Send(&aaliflowkitgrpc.StreamInput{
+			err = stream.Send(&flowkitgrpc.StreamInput{
 				InstructionId:    approvalResponse.InstructionId,
 				Type:             "approval_response",
 				ApprovalResponse: approvalResponse.ApprovalResponse,
@@ -727,7 +727,7 @@ func sendInterruptsToServer(ctx *logging.ContextMap, stream aaliflowkitgrpc.Exte
 				return
 			}
 		default:
-			err := stream.Send(&aaliflowkitgrpc.StreamInput{
+			err := stream.Send(&flowkitgrpc.StreamInput{
 				Type:      "interrupt",
 				Interrupt: msg,
 			})
@@ -748,7 +748,7 @@ func sendInterruptsToServer(ctx *logging.ContextMap, stream aaliflowkitgrpc.Exte
 //   - client: the client to the external functions gRPC
 //   - connection: the connection to the external functions gRPC
 //   - err: an error message if the client creation fails
-func createClient(url string, apiKey string) (client aaliflowkitgrpc.ExternalFunctionsClient, connection *grpc.ClientConn, err error) {
+func createClient(url string, apiKey string) (client flowkitgrpc.ExternalFunctionsClient, connection *grpc.ClientConn, err error) {
 	// Extract the scheme (http or https) from the EXTERNALFUNCTIONS_ENDPOINT
 	var scheme string
 	var address string
@@ -786,7 +786,7 @@ func createClient(url string, apiKey string) (client aaliflowkitgrpc.ExternalFun
 	}
 
 	// Return the client
-	c := aaliflowkitgrpc.NewExternalFunctionsClient(conn)
+	c := flowkitgrpc.NewExternalFunctionsClient(conn)
 	return c, conn, nil
 }
 

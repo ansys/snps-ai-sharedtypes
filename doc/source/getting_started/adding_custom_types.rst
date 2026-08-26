@@ -193,4 +193,4 @@ Next Steps
 
 - Explore existing types in the ``pkg/sharedtypes/`` directory
 - Review the type registry in ``pkg/typeconverters/typeconverters.go`` to see all supported types
-- Review gRPC definitions in ``pkg/aaliagentgrpc/`` and ``pkg/aaliflowkitgrpc/``
+- Review gRPC definitions in ``pkg/agentgrpc/`` and ``pkg/flowkitgrpc/``

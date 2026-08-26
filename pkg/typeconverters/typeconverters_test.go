@@ -27,7 +27,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ansys/aali-sharedtypes/pkg/sharedtypes"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
 )
 
 func TestJSONToGo(t *testing.T) {

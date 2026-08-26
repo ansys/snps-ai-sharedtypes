@@ -51,7 +51,7 @@ jobs:
 
       - name: Generate Go API documentation
         run: |
-          gopages -internal -source-link "https://github.com/ansys/aali-sharedtypes/blob/main/{{.Path}}{{if .Line}}#L{{.Line}}{{end}}" -out doc/_build/html/api
+          gopages -internal -source-link "https://github.com/ansys/snps-ai-sharedtypes/blob/main/{{.Path}}{{if .Line}}#L{{.Line}}{{end}}" -out doc/_build/html/api
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

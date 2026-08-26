@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package aali_wiki
+package wiki
 
 // GetDatabaseInfoRequest asks for a single database's metadata by name.
 type GetDatabaseInfoRequest struct {
@@ -38,7 +38,7 @@ type DeleteDatabaseRequest struct {
 	Name string `json:"name"`
 }
 
-// ModelOptions mirrors the aali-llm model configuration passed through on a request; kept local so this client stays dependency-light.
+// ModelOptions mirrors the snps-ai-llm model configuration passed through on a request; kept local so this client stays dependency-light.
 type ModelOptions struct {
 	FrequencyPenalty     *float32 `json:"frequencyPenalty,omitempty"`
 	MaxTokens            *int32   `json:"maxTokens,omitempty"`

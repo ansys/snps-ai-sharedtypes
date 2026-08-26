@@ -35,7 +35,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ansys/aali-sharedtypes/pkg/config"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/config"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc/metadata"
 )
@@ -608,7 +608,7 @@ func TestCreateMetaDataFromCtx(t *testing.T) {
 		t.Fatal("Failed to extract metadata from context")
 	}
 
-	metadataValues := md.Get("aali-logging-context")
+	metadataValues := md.Get("snps-ai-logging-context")
 	if len(metadataValues) == 0 {
 		t.Fatal("No metadata values found")
 	}
@@ -641,7 +641,7 @@ func TestCreateCtxFromMetaData(t *testing.T) {
 	}
 	jsonData, _ := json.Marshal(body)
 
-	md := metadata.Pairs("aali-logging-context", string(jsonData))
+	md := metadata.Pairs("snps-ai-logging-context", string(jsonData))
 	grpcCtx := metadata.NewIncomingContext(context.Background(), md)
 
 	// Extract ContextMap
@@ -699,9 +699,9 @@ func TestCreateDialOptionsFromCtx(t *testing.T) {
 		t.Fatal("Expected non-nil dial options with HTTP headers")
 	}
 
-	headerValues := opts.HTTPHeader["aali-logging-context"]
+	headerValues := opts.HTTPHeader["snps-ai-logging-context"]
 	if len(headerValues) == 0 {
-		t.Fatal("Expected aali-logging-context header to be set")
+		t.Fatal("Expected snps-ai-logging-context header to be set")
 	}
 
 	// Verify JSON structure
@@ -729,7 +729,7 @@ func TestCreateCtxFromHeader(t *testing.T) {
 	jsonData, _ := json.Marshal(body)
 
 	req := httptest.NewRequest("GET", "http://example.com", nil)
-	req.Header.Set("aali-logging-context", string(jsonData))
+	req.Header.Set("snps-ai-logging-context", string(jsonData))
 
 	// Extract ContextMap
 	ctx, err := CreateCtxFromHeader(req)

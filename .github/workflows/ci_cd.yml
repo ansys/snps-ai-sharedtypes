@@ -10,7 +10,7 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
-  DOCUMENTATION_CNAME: 'ansys.github.io/aali-sharedtypes'
+  DOCUMENTATION_CNAME: 'ansys.github.io/snps-ai-sharedtypes'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - run: go test $(go list ./pkg/... | grep -v 'aali_graphdb')  # run all the tests except for those in aali_graphdb (those are run below in separate job)
+      - run: go test $(go list ./pkg/... | grep -v 'pkg/graphdb')  # run all the tests except for those in pkg/graphdb (those are run below in separate job)
 
   graphdb-client-unit-tests:
     uses: ./.github/workflows/graphdb-client-tests.yml
@@ -122,8 +122,8 @@ jobs:
           echo "Using protoc include path: $PROTOC_INCLUDE"
           ls -la "$PROTOC_INCLUDE/google/protobuf/" || echo "Include path not found"
 
-          protoc --proto_path=. --proto_path="$PROTOC_INCLUDE" --go_out=pkg --go-grpc_out=pkg ./pkg/aaliflowkitgrpc/aali-flowkit.proto
-          protoc --proto_path=. --proto_path="$PROTOC_INCLUDE" --go_out=pkg --go-grpc_out=pkg ./pkg/aaliagentgrpc/aali-agent.proto
+          protoc --proto_path=. --proto_path="$PROTOC_INCLUDE" --go_out=pkg --go-grpc_out=pkg ./pkg/flowkitgrpc/flowkit.proto
+          protoc --proto_path=. --proto_path="$PROTOC_INCLUDE" --go_out=pkg --go-grpc_out=pkg ./pkg/agentgrpc/agent.proto
           go mod tidy
           go mod verify
 
@@ -187,7 +187,7 @@ jobs:
       - name: Build GoPages
         run: |
           go install github.com/johnstarich/go/gopages@latest
-          gopages -internal -source-link "https://github.com/ansys/aali-sharedtypes/blob/main/{{.Path}}{{if .Line}}#L{{.Line}}{{end}}"
+          gopages -internal -source-link "https://github.com/ansys/snps-ai-sharedtypes/blob/main/{{.Path}}{{if .Line}}#L{{.Line}}{{end}}"
 
       - name: Download HTML documentation artifacts
         uses: actions/download-artifact@v4
@@ -196,7 +196,7 @@ jobs:
           path: documentation-html
 
       - name: Run Python script
-        run: python pkg/scripts/doc_api_reference.py ansys aali-sharedtypes
+        run: python pkg/scripts/doc_api_reference.py ansys snps-ai-sharedtypes
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

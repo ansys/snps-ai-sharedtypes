@@ -49,7 +49,7 @@ type FlowKitPythonFunction struct {
 	Definitions interface{}      `json:"definitions"`
 }
 
-// FunctionDefinitionShort is equivalent to FunctionDefinition but without the API key (used for aali-agent rest API)
+// FunctionDefinitionShort is equivalent to FunctionDefinition but without the API key (used for snps-ai-agent rest API)
 type FunctionDefinitionShort struct {
 	Name             string           `json:"name" yaml:"name"`
 	FlowkitUrl       string           `json:"flowkit_url" yaml:"flowkit_url"` // URL of the connected FlowKit server containing this function

@@ -25,7 +25,7 @@ package sharedtypes
 import (
 	"encoding/json"
 
-	"github.com/ansys/aali-sharedtypes/pkg/logging"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/logging"
 )
 
 // Message represents the JSON message you are expecting

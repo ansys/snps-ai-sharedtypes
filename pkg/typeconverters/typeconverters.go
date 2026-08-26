@@ -28,8 +28,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ansys/aali-sharedtypes/pkg/aali_graphdb"
-	"github.com/ansys/aali-sharedtypes/pkg/sharedtypes"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/graphdb"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
 	"github.com/coder/websocket"
 )
 
@@ -243,8 +243,8 @@ func init() {
 		"[]map[string]interface{}": jsonSliceConverter[[]map[string]interface{}](),
 		"[]map[string]any":         jsonSliceConverter[[]map[string]interface{}](),
 
-		// Custom types - aali_graphdb
-		"ParameterMap": jsonMapConverter[aali_graphdb.ParameterMap](),
+		// Custom types - graphdb
+		"ParameterMap": jsonMapConverter[graphdb.ParameterMap](),
 
 		// Custom types - sharedtypes (structs)
 		"DbArrayFilter":            jsonMapConverter[sharedtypes.DbArrayFilter](),

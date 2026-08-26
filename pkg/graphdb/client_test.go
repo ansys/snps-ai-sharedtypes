@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package aali_graphdb
+package graphdb
 
 import (
 	"archive/tar"
@@ -94,15 +94,15 @@ func getTestClient(t *testing.T) *Client {
 			},
 		},
 	}
-	aaliDbCont, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+	dbCont, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req, Started: true,
 	})
-	defer testcontainers.CleanupContainer(t, aaliDbCont)
+	defer testcontainers.CleanupContainer(t, dbCont)
 	require.NoError(t, err)
 
-	port, err := aaliDbCont.MappedPort(ctx, "8080/tcp")
+	port, err := dbCont.MappedPort(ctx, "8080/tcp")
 	require.NoError(t, err)
-	host, err := aaliDbCont.Host(ctx)
+	host, err := dbCont.Host(ctx)
 	require.NoError(t, err)
 
 	tr := &http.Transport{

@@ -22,4 +22,4 @@
 
 //go:generate go run ../../internal/gen/value/gen.go
 
-package aali_graphdb
+package graphdb

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package aaliflowkitgrpc;
+package flowkitgrpc;
 
-option go_package = "./aaliflowkitgrpc";
+option go_package = "./flowkitgrpc";
 
 // ExternalFunctions is a gRPC service that allows for listing and running
 // the function available in the externalfunctions package.

@@ -29,8 +29,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ansys/aali-sharedtypes/pkg/logging"
-	"github.com/ansys/aali-sharedtypes/pkg/sharedtypes"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/logging"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
 	"github.com/openai/openai-go/v2"
 	"github.com/openai/openai-go/v2/shared"
 )

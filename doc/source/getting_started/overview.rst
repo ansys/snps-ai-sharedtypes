@@ -39,7 +39,7 @@ Why Shared Types?
 AALI Shared Types ensures all services speak the same language by providing:
 
 - **Type definitions** for functions, sessions, and data structures
-- **gRPC protocols** (``aaliagentgrpc``, ``aaliflowkitgrpc``) for service communication
+- **gRPC protocols** (``agentgrpc``, ``flowkitgrpc``) for service communication
 - **Type converters** for JSON/Go transformations
 - **Configuration structures** for service setup
 

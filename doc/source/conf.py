@@ -28,7 +28,7 @@ import os
 from ansys_sphinx_theme import ansys_favicon, get_version_match
 
 # Project information
-project = "aali-sharedtypes"
+project = "snps-ai-sharedtypes"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "ANSYS, Inc."
 
@@ -47,15 +47,15 @@ html_short_title = html_title = project
 html_favicon = ansys_favicon
 html_context = {
     "github_user": "ansys",
-    "github_repo": "aali-sharedtypes",
+    "github_repo": "snps-ai-sharedtypes",
     "github_version": "main",
     "doc_path": "doc/source",
 }
 html_theme_options = {
     "logo": "ansys",
-    "github_url": "https://github.com/ansys/aali-sharedtypes",
+    "github_url": "https://github.com/ansys/snps-ai-sharedtypes",
     "additional_breadcrumbs": [
-        ("Aali", "https://aali.docs.ansys.com/"),
+        ("Aali", "https://snps-ai.docs.ansys.com/"),
     ],
     "switcher": {
         "json_url": f"https://{cname}/versions.json",

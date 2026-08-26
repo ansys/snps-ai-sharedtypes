@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package aali_graphdb
+package graphdb
 
 import (
 	"bytes"
@@ -32,7 +32,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ansys/aali-sharedtypes/pkg/clients"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/clients"
 	"go.uber.org/zap"
 	"golang.org/x/mod/semver"
 )
@@ -432,47 +432,47 @@ func (params ParameterMap) AsParameters() (map[string]Value, error) {
 	return params, nil
 }
 
-type aaliGraphDbExportOpts struct {
+type graphDbExportOpts struct {
 	Format      string `json:"format,omitempty"`
 	Compression string `json:"compression,omitempty"`
 }
 
 type AaliGraphDbExportOpt interface {
-	apply(*aaliGraphDbExportOpts)
+	apply(*graphDbExportOpts)
 }
 
 type WithFormatParquet struct{}
 
-func (WithFormatParquet) apply(opts *aaliGraphDbExportOpts) {
+func (WithFormatParquet) apply(opts *graphDbExportOpts) {
 	opts.Format = "parquet"
 }
 
 type WithFormatCsv struct{}
 
-func (WithFormatCsv) apply(opts *aaliGraphDbExportOpts) {
+func (WithFormatCsv) apply(opts *graphDbExportOpts) {
 	opts.Format = "csv"
 }
 
 type WithCompressionDefault struct{}
 
-func (WithCompressionDefault) apply(opts *aaliGraphDbExportOpts) {
+func (WithCompressionDefault) apply(opts *graphDbExportOpts) {
 	opts.Compression = "default"
 }
 
 type WithCompressionFast struct{}
 
-func (WithCompressionFast) apply(opts *aaliGraphDbExportOpts) {
+func (WithCompressionFast) apply(opts *graphDbExportOpts) {
 	opts.Compression = "fast"
 }
 
 type WithCompressionBest struct{}
 
-func (WithCompressionBest) apply(opts *aaliGraphDbExportOpts) {
+func (WithCompressionBest) apply(opts *graphDbExportOpts) {
 	opts.Compression = "best"
 }
 
 func (client *Client) ExportDatabase(name string, dst io.Writer, opts ...AaliGraphDbExportOpt) error {
-	exportOpts := &aaliGraphDbExportOpts{}
+	exportOpts := &graphDbExportOpts{}
 	for _, opt := range opts {
 		opt.apply(exportOpts)
 	}

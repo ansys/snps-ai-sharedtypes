@@ -10,7 +10,7 @@ To use AALI Shared Types in your Go project, import it as a module dependency:
 
 .. code-block:: bash
 
-   go get github.com/ansys/aali-sharedtypes
+   go get github.com/ansys/snps-ai-sharedtypes
 
 Using in Your Code
 ------------------
@@ -20,8 +20,8 @@ Import the packages you need:
 .. code-block:: go
 
    import (
-       "github.com/ansys/aali-sharedtypes/pkg/sharedtypes"
-       "github.com/ansys/aali-sharedtypes/pkg/typeconverters"
+       "github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
+       "github.com/ansys/snps-ai-sharedtypes/pkg/typeconverters"
    )
 
 Verify Installation
@@ -35,7 +35,7 @@ Create a simple test file to verify the import works:
 
    import (
        "fmt"
-       "github.com/ansys/aali-sharedtypes/pkg/sharedtypes"
+       "github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
    )
 
    func main() {
