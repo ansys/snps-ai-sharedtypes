@@ -74,7 +74,7 @@ func getTestClient(t *testing.T) *Client {
 
 	env := map[string]string{"RUST_LOG": "debug"}
 	if apiKey != "" {
-		env["SNPS_AI_GRAPHDB_API_KEY"] = apiKey
+		env["AALI_GRAPHDB_API_KEY"] = apiKey
 	}
 
 	req := testcontainers.ContainerRequest{
