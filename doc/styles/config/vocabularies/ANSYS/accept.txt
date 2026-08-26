@@ -10,5 +10,5 @@ sharedtypes
 typeconverters
 agentgrpc
 flowkitgrpc
-snps_ai_graphdb
+graphdb
 Datadog
