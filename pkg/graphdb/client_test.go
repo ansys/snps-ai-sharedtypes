@@ -62,7 +62,7 @@ var imageName string
 var apiKey string
 
 func init() {
-	flag.StringVar(&imageName, "imagename", "ghcr.io/ansys/aali-graphdb:edge", "Name of the aali-graphdb image to run the tests against")
+	flag.StringVar(&imageName, "imagename", "ghcr.io/ansys/snps-ai-graphdb:edge", "Name of the snps-ai-graphdb image to run the tests against")
 	flag.StringVar(&apiKey, "apikey", "", "Set the tests to use an API key")
 }
 
@@ -74,7 +74,7 @@ func getTestClient(t *testing.T) *Client {
 
 	env := map[string]string{"RUST_LOG": "debug"}
 	if apiKey != "" {
-		env["AALI_GRAPHDB_API_KEY"] = apiKey
+		env["SNPS_AI_GRAPHDB_API_KEY"] = apiKey
 	}
 
 	req := testcontainers.ContainerRequest{
@@ -173,7 +173,7 @@ func TestCreateDatabase(t *testing.T) {
 		logs := strings.Split(strings.TrimSpace(warnLogs.String()), "\n")
 		assert.Len(t, logs, 1)
 		assert.True(t, slices.ContainsFunc(logs, func(log string) bool {
-			return strings.Contains(log, "The `POST /databases` method for creating a new DB is deprecated. Upgrade your aali-graphdb server to use the newer `PUT /databases/{name}` method")
+			return strings.Contains(log, "The `POST /databases` method for creating a new DB is deprecated. Upgrade your snps-ai-graphdb server to use the newer `PUT /databases/{name}` method")
 		}))
 	}
 
@@ -543,6 +543,9 @@ func TestRequiresApiKey(t *testing.T) {
 	if semver.Compare("v"+version.Version, "v1.2.2") < 0 {
 		t.Skip("API key auth was not released prior to server version v1.2.2")
 	}
+	if apiKey == "" {
+		t.Skip("API key auth is not enforced when no API key is configured")
+	}
 
 	// try to make a call without api key and make sure you get an error
 	_, err = client.WithApiKey("").GetDatabases()
@@ -568,17 +571,17 @@ func TestExport(t *testing.T) {
 	}
 
 	testCases := map[string]struct {
-		opts []AaliGraphDbExportOpt
+		opts []GraphDbExportOpt
 		ext  string
 	}{
-		"NoOpts":             {[]AaliGraphDbExportOpt{}, "parquet"},
-		"Parquet":            {[]AaliGraphDbExportOpt{WithFormatParquet{}}, "parquet"},
-		"Csv":                {[]AaliGraphDbExportOpt{WithFormatCsv{}}, "csv"},
-		"DefaultCompression": {[]AaliGraphDbExportOpt{WithCompressionDefault{}}, "parquet"},
-		"BestCompression":    {[]AaliGraphDbExportOpt{WithCompressionBest{}}, "parquet"},
-		"FastCompression":    {[]AaliGraphDbExportOpt{WithCompressionFast{}}, "parquet"},
-		"ParquetBest":        {[]AaliGraphDbExportOpt{WithFormatParquet{}, WithCompressionBest{}}, "parquet"},
-		"CsvFast":            {[]AaliGraphDbExportOpt{WithCompressionFast{}, WithFormatCsv{}}, "csv"},
+		"NoOpts":             {[]GraphDbExportOpt{}, "parquet"},
+		"Parquet":            {[]GraphDbExportOpt{WithFormatParquet{}}, "parquet"},
+		"Csv":                {[]GraphDbExportOpt{WithFormatCsv{}}, "csv"},
+		"DefaultCompression": {[]GraphDbExportOpt{WithCompressionDefault{}}, "parquet"},
+		"BestCompression":    {[]GraphDbExportOpt{WithCompressionBest{}}, "parquet"},
+		"FastCompression":    {[]GraphDbExportOpt{WithCompressionFast{}}, "parquet"},
+		"ParquetBest":        {[]GraphDbExportOpt{WithFormatParquet{}, WithCompressionBest{}}, "parquet"},
+		"CsvFast":            {[]GraphDbExportOpt{WithCompressionFast{}, WithFormatCsv{}}, "csv"},
 	}
 
 	for mode, exportBuilder := range map[string]func(*testing.T) io.ReadWriter{
@@ -694,7 +697,7 @@ func TestImport(t *testing.T) {
 		},
 	} {
 		t.Run(mode, func(t *testing.T) {
-			for name, format := range map[string]AaliGraphDbExportOpt{
+			for name, format := range map[string]GraphDbExportOpt{
 				"Parquet": WithFormatParquet{},
 				"Csv":     WithFormatCsv{},
 			} {

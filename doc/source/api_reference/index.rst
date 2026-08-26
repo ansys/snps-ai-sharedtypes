@@ -5,7 +5,7 @@ API reference
 
    Complete API documentation is automatically generated during the CI/CD build process.
 
-The AALI Shared Types library contains the following packages:
+The Synopsys AI Tools Shared Types library contains the following packages:
 
 Core Packages
 -------------
@@ -17,7 +17,7 @@ Core Packages
    * - Package
      - Description
    * - **sharedtypes**
-     - Core type definitions used across all AALI services (agents, functions, databases, LLM handlers)
+     - Core type definitions used across all Synopsys AI Tools services (agents, functions, databases, LLM handlers)
    * - **typeconverters**
      - Utilities for converting between JSON, Go types, and string representations
 
@@ -31,9 +31,9 @@ gRPC Protocol Packages
    * - Package
      - Description
    * - **agentgrpc**
-     - Protocol buffer definitions and gRPC service for AALI Agent communication
+     - Protocol buffer definitions and gRPC service for Synopsys AI Tools Agent communication
    * - **flowkitgrpc**
-     - Protocol buffer definitions and gRPC service for AALI FlowKit communication
+     - Protocol buffer definitions and gRPC service for Synopsys AI Tools FlowKit communication
 
 Utility Packages
 ----------------
@@ -45,7 +45,7 @@ Utility Packages
    * - Package
      - Description
    * - **config**
-     - Configuration management utilities for AALI services
+     - Configuration management utilities for Synopsys AI Tools services
    * - **logging**
      - Structured logging with Datadog integration
    * - **clients**

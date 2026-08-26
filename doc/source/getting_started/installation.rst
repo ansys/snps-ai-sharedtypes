@@ -1,12 +1,12 @@
 Installation
 ============
 
-AALI Shared Types is a Go module that provides type definitions for AALI services.
+Synopsys AI Tools Shared Types is a Go module that provides type definitions for Synopsys AI Tools services.
 
 Import as Go Module
 -------------------
 
-To use AALI Shared Types in your Go project, import it as a module dependency:
+To use Synopsys AI Tools Shared Types in your Go project, import it as a module dependency:
 
 .. code-block:: bash
 
@@ -57,4 +57,4 @@ Run the test:
 Next Steps
 ----------
 
-Now that you have AALI Shared Types installed, learn how to :doc:`add custom types <adding_custom_types>` for your FlowKit functions.
+Now that you have Synopsys AI Tools Shared Types installed, learn how to :doc:`add custom types <adding_custom_types>` for your FlowKit functions.

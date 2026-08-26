@@ -203,7 +203,7 @@ func (client Client) CreateDatabase(name string) error {
 }
 
 func (client Client) createDatabasePost(name string) error {
-	client.logger.Warn("The `POST /databases` method for creating a new DB is deprecated. Upgrade your aali-graphdb server to use the newer `PUT /databases/{name}` method")
+	client.logger.Warn("The `POST /databases` method for creating a new DB is deprecated. Upgrade your snps-ai-graphdb server to use the newer `PUT /databases/{name}` method")
 
 	u, err := url.JoinPath(client.address, "databases")
 	if err != nil {
@@ -437,7 +437,7 @@ type graphDbExportOpts struct {
 	Compression string `json:"compression,omitempty"`
 }
 
-type AaliGraphDbExportOpt interface {
+type GraphDbExportOpt interface {
 	apply(*graphDbExportOpts)
 }
 
@@ -471,7 +471,7 @@ func (WithCompressionBest) apply(opts *graphDbExportOpts) {
 	opts.Compression = "best"
 }
 
-func (client *Client) ExportDatabase(name string, dst io.Writer, opts ...AaliGraphDbExportOpt) error {
+func (client *Client) ExportDatabase(name string, dst io.Writer, opts ...GraphDbExportOpt) error {
 	exportOpts := &graphDbExportOpts{}
 	for _, opt := range opts {
 		opt.apply(exportOpts)

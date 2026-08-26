@@ -40,7 +40,7 @@ func ConvertMCPToAzureFormat(
 }
 
 // ConvertAzureToolCallsToSharedTypes converts Azure OpenAI tool call responses
-// to the shared ToolCall format used throughout the AALI framework.
+// to the shared ToolCall format used throughout the Synopsys AI Tools framework.
 // Azure OpenAI Service uses the same response format as OpenAI.
 func ConvertAzureToolCallsToSharedTypes(
 	ctx *logging.ContextMap,

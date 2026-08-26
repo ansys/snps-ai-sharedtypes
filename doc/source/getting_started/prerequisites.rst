@@ -1,12 +1,12 @@
 Prerequisites
 =============
 
-Before working with AALI Shared Types, you need Go and Git installed on your system.
+Before working with Synopsys AI Tools Shared Types, you need Go and Git installed on your system.
 
 Go Installation
 ---------------
 
-AALI Shared Types requires **Go 1.23.0 or higher**.
+Synopsys AI Tools Shared Types requires **Go 1.23.0 or higher**.
 
 .. tab-set::
 
@@ -62,7 +62,7 @@ Git is required to fetch Go modules and clone the repository.
 Clone the Repository
 --------------------
 
-To work on AALI Shared Types:
+To work on Synopsys AI Tools Shared Types:
 
 .. code:: bash
 
@@ -84,5 +84,5 @@ Next Steps
 
 With prerequisites installed, you can:
 
-- :doc:`Install <installation>` AALI Shared Types as a dependency
+- :doc:`Install <installation>` Synopsys AI Tools Shared Types as a dependency
 - :doc:`Add custom types <adding_custom_types>` for your FlowKit functions

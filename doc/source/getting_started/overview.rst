@@ -1,7 +1,7 @@
 Overview
 ========
 
-AALI (Ansys Automation and Learning Intelligence) is a distributed system for orchestrating workflows and executing functions. It consists of multiple services that communicate via gRPC and WebSocket protocols.
+SNPS-AI (Ansys Automation and Learning Intelligence) is a distributed system for orchestrating workflows and executing functions. It consists of multiple services that communicate via gRPC and WebSocket protocols.
 
 Architecture
 ------------
@@ -15,14 +15,14 @@ Architecture
                         │ WebSocket/gRPC
                         ▼
    ┌─────────────────────────────────────────────────────────┐
-   │                     AALI Agent                          │
+   │                     SNPS-AI Agent                       │
    │         (Workflow orchestration & routing)              │
    └────────────┬──────────────────────────┬─────────────────┘
-                │                           │
-                │ gRPC                      │ gRPC
-                ▼                           ▼
+                │                          │
+                │ gRPC                     │ gRPC
+                ▼                          ▼
    ┌───────────────────────┐    ┌─────────────────────────┐
-   │    AALI FlowKit       │    │       AALI Exec         │
+   │    SNPS-AI FlowKit    │    │       SNPS-AI Exec      │
    │  (Go/Python functions)│    │   (Remote execution)    │
    └───────────────────────┘    └─────────────────────────┘
 
@@ -30,13 +30,13 @@ Architecture
                     ▲               ▲               ▲
                     │               │               │
                     └───────────────┴───────────────┘
-                         AALI Shared Types
+                    SNPS-AI Shared Types
                     (Common type definitions)
 
 Why Shared Types?
 -----------------
 
-AALI Shared Types ensures all services speak the same language by providing:
+Synopsys AI Tools Shared Types ensures all services speak the same language by providing:
 
 - **Type definitions** for functions, sessions, and data structures
 - **gRPC protocols** (``agentgrpc``, ``flowkitgrpc``) for service communication

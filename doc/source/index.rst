@@ -1,8 +1,8 @@
-AALI Shared Types documentation
-================================
+Synopsys AI Tools Shared Types documentation
+==============================================
 
-AALI Shared Types is a Go library that provides common type definitions
-used across all AALI services.
+Synopsys AI Tools Shared Types is a Go library that provides common type definitions
+used across all Synopsys AI Tools services.
 
 .. toctree::
     :hidden:
@@ -20,7 +20,7 @@ used across all AALI services.
 
         :material-regular:`directions_run;48px`
 
-        Learn how to install and use AALI Shared Types
+        Learn how to install and use Synopsys AI Tools Shared Types
         for creating custom FlowKit functions.
 
         +++
