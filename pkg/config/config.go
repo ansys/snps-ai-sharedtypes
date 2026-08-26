@@ -42,10 +42,10 @@ import (
 )
 
 ////////////////////////////////////////////
-// Standard Config init for Aali Go Modules
+// Standard Config init for Synopsys AI Tools Go Modules
 ////////////////////////////////////////////
 
-// InitConfig initializes the configuration for the Aali service.
+// InitConfig initializes the configuration for the Synopsys AI Tools service.
 //
 // Parameters:
 //   - requiredProperties: The list of required properties.
@@ -53,7 +53,7 @@ import (
 func InitConfig(requiredProperties []string, optionalDefaultValues map[string]interface{}) {
 	// Get config file location
 	// 1st option: read from environment variable
-	configFile := os.Getenv("AALI_CONFIG_PATH")
+	configFile := os.Getenv("SNPS_AI_CONFIG_PATH")
 	if configFile == "" {
 		// 2nd option: read from default location... root directory
 		configFile = "config.yaml"

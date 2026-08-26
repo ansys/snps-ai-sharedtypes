@@ -27,7 +27,7 @@ import (
 	"strings"
 )
 
-// Config contains all the configuration settings for the Aali service.
+// Config contains all the configuration settings for the Synopsys AI Tools service.
 type Config struct {
 
 	// Logging
@@ -61,12 +61,12 @@ type Config struct {
 	AZURE_KEY_VAULT_NAME                string `yaml:"AZURE_KEY_VAULT_NAME" json:"AZUREKEYVAULTNAME"`
 	AZURE_MANAGED_IDENTITY_ID           string `yaml:"AZURE_MANAGED_IDENTITY_ID" json:"AZUREMANAGEDIDENTITYID"`
 
-	// Aali Chat
-	///////////////
+	// Chat
+	///////
 	CHAT_ADDRESS string `yaml:"CHAT_ADDRESS" json:"CHATADDRESS"`
 
-	// Aali Agent
-	///////////////
+	// Agent
+	////////
 	AGENT_ADDRESS    string `yaml:"AGENT_ADDRESS" json:"AGENTADDRESS"`
 	WORKFLOW_API_KEY string `yaml:"WORKFLOW_API_KEY" json:"WORKFLOWAPIKEY"`
 	// Workflow Runs
@@ -123,14 +123,14 @@ type Config struct {
 	// Workflow Store
 	WORKFLOW_CONFIG_VARIABLES map[string]string `yaml:"WORKFLOW_CONFIG_VARIABLES" json:"WORKFLOWCONFIGVARIABLES"`
 
-	// Aali LLM
-	/////////////
+	// LLM
+	///////
 	LLM_ADDRESS            string `yaml:"LLM_ADDRESS" json:"LLMADDRESS"`
 	MODELS_CONFIG_LOCATION string `yaml:"MODELS_CONFIG_LOCATION" json:"MODELSCONFIGLOCATION"`
 	LLM_API_KEY            string `yaml:"LLM_API_KEY" json:"LLMAPIKEY"`
 
-	// Aali Exec
-	//////////////
+	// Exec
+	///////
 	EXEC_ADDRESS string `yaml:"EXEC_ADDRESS" json:"EXECADDRESS"`
 	EXEC_ID      string `yaml:"EXEC_ID" json:"EXECID"`
 	EXEC_API_KEY string `yaml:"EXEC_API_KEY" json:"EXECAPIKEY"`
@@ -143,15 +143,15 @@ type Config struct {
 	// Agent connection
 	AGENT_ENDPOINT string `yaml:"AGENT_ENDPOINT" json:"AGENTENDPOINT"`
 
-	// Aali KVDB
-	/////////////////
+	// KVDB
+	///////
 	KVDB_ADDRESS   string `yaml:"KVDB_ADDRESS" json:"KVDBADDRESS"`
 	KVDB_API_KEY   string `yaml:"KVDB_API_KEY" json:"KVDBAPIKEY"`
 	KVDB_PATH      string `yaml:"KVDB_PATH" json:"KVDBPATH"`
 	KVDB_IN_MEMORY bool   `yaml:"KVDB_IN_MEMORY" json:"KVDBINMEMORY"`
 
-	// Aali Flowkit
-	/////////////////
+	// Flowkit
+	//////////
 	FLOWKIT_ADDRESS string `yaml:"FLOWKIT_ADDRESS" json:"FLOWKITADDRESS"`
 	FLOWKIT_API_KEY string `yaml:"FLOWKIT_API_KEY" json:"FLOWKITAPIKEY"`
 	// Connections to other Modules
@@ -175,18 +175,18 @@ type Config struct {
 	// Connections to external services
 	MONGODB_CS string `yaml:"MONGODB_CS" json:"MONGODBCS"`
 
-	// Aali Flowkit Python
-	//////////////////////
+	// Flowkit Python
+	/////////////////
 	FLOWKIT_PYTHON_ADDRESS string `yaml:"FLOWKIT_PYTHON_ADDRESS" json:"FLOWKITPYTHONADDRESS"`
 	FLOWKIT_PYTHON_API_KEY string `yaml:"FLOWKIT_PYTHON_API_KEY" json:"FLOWKITPYTHONAPIKEY"`
 
 	// Database Settings
-	//////////////////////
+	////////////////////
 	GRAPHDB_ADDR      string `yaml:"GRAPHDB_ADDR" json:"GRAPHDBADDR"`
 	GRAPHDB_DATA_PATH string `yaml:"GRAPHDB_DATA_PATH" json:"GRAPHDBDATAPATH"`
 
-	// Aali Proxy / data-shield
-	///////////////////
+	// Proxy / data-shield
+	//////////////////////
 	// datashield uses these to determine which addresses to listen on for incoming proxy requests
 	PROXY_ADMIN_ADDRESS   string `yaml:"PROXY_ADMIN_ADDRESS" json:"PROXYADMINADDRESS"`
 	PROXY_GRAPHDB_ADDRESS string `yaml:"PROXY_GRAPHDB_ADDRESS" json:"PROXYGRAPHDBADDRESS"`

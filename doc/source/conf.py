@@ -55,7 +55,7 @@ html_theme_options = {
     "logo": "ansys",
     "github_url": "https://github.com/ansys/snps-ai-sharedtypes",
     "additional_breadcrumbs": [
-        ("Aali", "https://snps-ai.docs.ansys.com/"),
+        ("Synopsys AI Tools", "https://snps-ai.docs.ansys.com/"),
     ],
     "switcher": {
         "json_url": f"https://{cname}/versions.json",

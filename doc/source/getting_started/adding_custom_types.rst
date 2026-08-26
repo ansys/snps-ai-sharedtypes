@@ -1,7 +1,7 @@
 Adding Custom Types
 ===================
 
-When creating custom FlowKit functions, you may need to define custom data types that aren't already available in AALI Shared Types. This guide walks you through the process of adding new types and getting them integrated into AALI FlowKit and Agent.
+When creating custom FlowKit functions, you may need to define custom data types that aren't already available in Synopsys AI Tools Shared Types. This guide walks you through the process of adding new types and getting them integrated into Synopsys AI Tools FlowKit and Agent.
 
 When to Add Custom Types
 ------------------------
@@ -152,8 +152,8 @@ Once your custom type is working:
 2. **Create a pull request** to merge into the main branch
 3. **After merge**, the shared types need to be updated in:
 
-   - AALI FlowKit: Import the latest shared types version
-   - AALI Agent: Import the latest shared types version
+   - Synopsys AI Tools FlowKit: Import the latest shared types version
+   - Synopsys AI Tools Agent: Import the latest shared types version
 
 4. **Coordinate with the team** to ensure both services are updated
 

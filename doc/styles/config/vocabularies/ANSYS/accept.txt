@@ -1,4 +1,4 @@
-Aali Shared types
+Synopsys AI Tools Shared types
 [Aa]ali
 (?i)Ansys
 API

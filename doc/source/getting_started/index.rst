@@ -7,7 +7,7 @@ Getting started
    .. grid-item-card:: Overview
       :text-align: center
 
-      Understand the AALI architecture and how
+      Understand the Synopsys AI Tools architecture and how
       Shared Types enables service communication.
 
       +++
@@ -37,7 +37,7 @@ Getting started
    .. grid-item-card:: Installation
       :text-align: center
 
-      Learn how to add AALI Shared Types to your Go project
+      Learn how to add Synopsys AI Tools Shared Types to your Go project
       and verify the installation.
 
       +++
