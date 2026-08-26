@@ -1,5 +1,5 @@
 Synopsys AI Tools Shared Types documentation
-================================
+==============================================
 
 Synopsys AI Tools Shared Types is a Go library that provides common type definitions
 used across all Synopsys AI Tools services.
