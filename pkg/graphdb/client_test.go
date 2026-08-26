@@ -543,6 +543,9 @@ func TestRequiresApiKey(t *testing.T) {
 	if semver.Compare("v"+version.Version, "v1.2.2") < 0 {
 		t.Skip("API key auth was not released prior to server version v1.2.2")
 	}
+	if apiKey == "" {
+		t.Skip("API key auth is not enforced when no API key is configured")
+	}
 
 	// try to make a call without api key and make sure you get an error
 	_, err = client.WithApiKey("").GetDatabases()
@@ -614,7 +617,7 @@ func TestExport(t *testing.T) {
 					require.NoError(t, os.Mkdir(unarchivedPath, os.ModePerm))
 					require.NoError(t, extractTarGz(export, unarchivedPath))
 
-					exportDir := path.Join(unarchivedPath, "snps-ai-graphdb-export")
+					exportDir := path.Join(unarchivedPath, "aali-graphdb-export")
 					assert.DirExists(t, exportDir)
 					assert.FileExists(t, path.Join(exportDir, "copy.cypher"))
 					assert.FileExists(t, path.Join(exportDir, "schema.cypher"))
