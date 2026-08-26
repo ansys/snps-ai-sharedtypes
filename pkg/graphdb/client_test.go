@@ -62,7 +62,7 @@ var imageName string
 var apiKey string
 
 func init() {
-	flag.StringVar(&imageName, "imagename", "ghcr.io/ansys/aali-graphdb:edge", "Name of the snps-ai-graphdb image to run the tests against")
+	flag.StringVar(&imageName, "imagename", "ghcr.io/ansys/snps-ai-graphdb:edge", "Name of the snps-ai-graphdb image to run the tests against")
 	flag.StringVar(&apiKey, "apikey", "", "Set the tests to use an API key")
 }
 
@@ -74,7 +74,7 @@ func getTestClient(t *testing.T) *Client {
 
 	env := map[string]string{"RUST_LOG": "debug"}
 	if apiKey != "" {
-		env["AALI_GRAPHDB_API_KEY"] = apiKey
+		env["SNPS_AI_GRAPHDB_API_KEY"] = apiKey
 	}
 
 	req := testcontainers.ContainerRequest{
