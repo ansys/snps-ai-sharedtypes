@@ -7,7 +7,7 @@ on:
         type: string
         description: The name of the `snps-ai-graphdb` image to run the unit tests against
         required: false
-        default: ghcr.io/ansys/snps-ai-graphdb:edge
+        default: ghcr.io/ansys/aali-graphdb:edge
 
 jobs:
   # build the matrix for the unit tests, whether this was called via workflow dispatch or not
@@ -22,7 +22,7 @@ jobs:
       - if: ${{ github.event_name == 'workflow_dispatch' }}
         run: echo "IMAGE_NAMES=[\"${{ inputs.image_name }}\"]" | tee -a "$GITHUB_ENV"
       - if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: echo "IMAGE_NAMES=[\"ghcr.io/ansys/snps-ai-graphdb:edge\", \"ghcr.io/ansys/snps-ai-graphdb:latest\", \"ghcr.io/ansys/snps-ai-graphdb:v1.0.0\"]" | tee -a "$GITHUB_ENV"
+        run: echo "IMAGE_NAMES=[\"ghcr.io/ansys/aali-graphdb:edge\", \"ghcr.io/ansys/aali-graphdb:latest\", \"ghcr.io/ansys/aali-graphdb:v1.0.0\"]" | tee -a "$GITHUB_ENV"
       - id: build-matrix
         run: |
           matrix=$(echo "$IMAGE_NAMES" | jq -c "[{image: .[], api_key: true}, {image: .[], api_key: false}]")
