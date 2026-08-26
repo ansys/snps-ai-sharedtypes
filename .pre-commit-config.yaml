@@ -1,4 +1,4 @@
-exclude: ^(pkg/aaliflowkitgrpc|pkg/aaliagentgrpc)
+exclude: ^(pkg/flowkitgrpc|pkg/agentgrpc)
 repos:
 - repo: https://github.com/ansys/pre-commit-hooks
   rev: v0.5.2
@@ -23,7 +23,7 @@ repos:
   hooks:
   - id: go-generate
     name: go generate
-    entry: go generate ./pkg/aali_graphdb
+    entry: go generate ./pkg/snps_ai_graphdb
     language: system
     pass_filenames: false
     stages:

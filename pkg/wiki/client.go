@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package aali_wiki
+package wiki
 
 import (
 	"bytes"
@@ -30,7 +30,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/ansys/aali-sharedtypes/pkg/clients"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/clients"
 	"go.uber.org/zap"
 )
 

@@ -66,8 +66,8 @@ To work on AALI Shared Types:
 
 .. code:: bash
 
-   git clone https://github.com/ansys/aali-sharedtypes.git
-   cd aali-sharedtypes
+   git clone https://github.com/ansys/snps-ai-sharedtypes.git
+   cd snps-ai-sharedtypes
 
 Verify Installation
 -------------------

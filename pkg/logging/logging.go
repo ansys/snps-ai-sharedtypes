@@ -35,7 +35,7 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/ansys/aali-sharedtypes/pkg/config"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc/metadata"
@@ -783,7 +783,7 @@ func dailyLogPath(location string) string {
 }
 
 // shortenFunction shortens a fully-qualified Go function name to its last two dot-separated segments.
-// e.g. "github.com/ansys/aali-agent/pkg/workflows/workflowstore.loadPredefinedWorkflows" -> "workflowstore.loadPredefinedWorkflows"
+// e.g. "github.com/ansys/snps-ai-agent/pkg/workflows/workflowstore.loadPredefinedWorkflows" -> "workflowstore.loadPredefinedWorkflows"
 func shortenFunction(fn string) string {
 	if fn == "" {
 		return ""
@@ -796,7 +796,7 @@ func shortenFunction(fn string) string {
 }
 
 // shortenCaller shortens a full caller path to just "filename:line".
-// e.g. "C:/Users/fkuhn/Documents/GitHub/aali-agent/pkg/clients/flowkit/flowkit.go:67" -> "flowkit.go:67"
+// e.g. "C:/Users/fkuhn/Documents/GitHub/snps-ai-agent/pkg/clients/flowkit/flowkit.go:67" -> "flowkit.go:67"
 func shortenCaller(caller string) string {
 	if caller == "" {
 		return ""
@@ -1164,7 +1164,7 @@ func CreateMetaDataFromCtx(ctx *ContextMap, ctxWithCancel context.Context) (ctxW
 
 	// Attach metadata to gRPC context
 	md := metadata.Pairs(
-		"aali-logging-context", string(jsonData),
+		"snps-ai-logging-context", string(jsonData),
 	)
 	return metadata.NewOutgoingContext(ctxWithCancel, md), nil
 }
@@ -1187,8 +1187,8 @@ func CreateCtxFromMetaData(ctxWithMetaData context.Context) (ctx *ContextMap, er
 		return ctx, nil
 	}
 
-	// Get the aali-logging-context value
-	metadataValues := md.Get("aali-logging-context")
+	// Get the snps-ai-logging-context value
+	metadataValues := md.Get("snps-ai-logging-context")
 	if len(metadataValues) == 0 {
 		return ctx, nil
 	}
@@ -1238,7 +1238,7 @@ func CreateDialOptionsFromCtx(ctx *ContextMap) (opts *websocket.DialOptions, err
 	}
 	opts = &websocket.DialOptions{
 		HTTPHeader: http.Header{
-			"aali-logging-context": []string{string(jsonData)},
+			"snps-ai-logging-context": []string{string(jsonData)},
 		},
 	}
 	return opts, nil
@@ -1256,8 +1256,8 @@ func CreateCtxFromHeader(request *http.Request) (ctx *ContextMap, err error) {
 	// Create new ContextMap
 	ctx = &ContextMap{}
 
-	// Get the aali-logging-context value
-	meta := request.Header.Get("aali-logging-context")
+	// Get the snps-ai-logging-context value
+	meta := request.Header.Get("snps-ai-logging-context")
 	if meta == "" {
 		return ctx, nil
 	}

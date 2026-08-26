@@ -30,9 +30,9 @@ gRPC Protocol Packages
 
    * - Package
      - Description
-   * - **aaliagentgrpc**
+   * - **agentgrpc**
      - Protocol buffer definitions and gRPC service for AALI Agent communication
-   * - **aaliflowkitgrpc**
+   * - **flowkitgrpc**
      - Protocol buffer definitions and gRPC service for AALI FlowKit communication
 
 Utility Packages
@@ -50,7 +50,7 @@ Utility Packages
      - Structured logging with Datadog integration
    * - **clients**
      - Client implementations for FlowKit (Go and Python)
-   * - **aali_graphdb**
+   * - **graphdb**
      - GraphDB client with logical types and value handling
 
 

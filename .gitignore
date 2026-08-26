@@ -44,7 +44,7 @@ doc_venv/
 
 # Generated API documentation
 doc/scripts/
-doc/source/api_reference/aali_graphdb/
+doc/source/api_reference/snps_ai_graphdb/
 doc/source/api_reference/clients/
 doc/source/api_reference/config/
 doc/source/api_reference/grpc/

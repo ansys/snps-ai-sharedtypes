@@ -129,7 +129,7 @@ func main() {
 	_, thisFile, _, _ := runtime.Caller(0)
 	genDir := filepath.Dir(thisFile)
 	tmplFile := filepath.Join(genDir, "logical_type.gotmpl")
-	outFile := filepath.Join(genDir, "../../../pkg/aali_graphdb/logical_type.go")
+	outFile := filepath.Join(genDir, "../../../pkg/snps_ai_graphdb/logical_type.go")
 
 	tmpl := template.Must(
 		template.New("").Funcs(template.FuncMap{

@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package aaliagentgrpc;
+package agentgrpc;
 
 import "google/protobuf/struct.proto";
 
-option go_package = "./aaliagentgrpc";
+option go_package = "./agentgrpc";
 
 // WorkflowRun is a gRPC service that allows for running a workflow.
 service WorkflowRun {

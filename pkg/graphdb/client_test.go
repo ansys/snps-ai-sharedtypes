@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package aali_graphdb
+package graphdb
 
 import (
 	"archive/tar"
@@ -62,7 +62,7 @@ var imageName string
 var apiKey string
 
 func init() {
-	flag.StringVar(&imageName, "imagename", "ghcr.io/ansys/aali-graphdb:edge", "Name of the aali-graphdb image to run the tests against")
+	flag.StringVar(&imageName, "imagename", "ghcr.io/ansys/snps-ai-graphdb:edge", "Name of the snps-ai-graphdb image to run the tests against")
 	flag.StringVar(&apiKey, "apikey", "", "Set the tests to use an API key")
 }
 
@@ -94,15 +94,15 @@ func getTestClient(t *testing.T) *Client {
 			},
 		},
 	}
-	aaliDbCont, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+	dbCont, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req, Started: true,
 	})
-	defer testcontainers.CleanupContainer(t, aaliDbCont)
+	defer testcontainers.CleanupContainer(t, dbCont)
 	require.NoError(t, err)
 
-	port, err := aaliDbCont.MappedPort(ctx, "8080/tcp")
+	port, err := dbCont.MappedPort(ctx, "8080/tcp")
 	require.NoError(t, err)
-	host, err := aaliDbCont.Host(ctx)
+	host, err := dbCont.Host(ctx)
 	require.NoError(t, err)
 
 	tr := &http.Transport{
@@ -173,7 +173,7 @@ func TestCreateDatabase(t *testing.T) {
 		logs := strings.Split(strings.TrimSpace(warnLogs.String()), "\n")
 		assert.Len(t, logs, 1)
 		assert.True(t, slices.ContainsFunc(logs, func(log string) bool {
-			return strings.Contains(log, "The `POST /databases` method for creating a new DB is deprecated. Upgrade your aali-graphdb server to use the newer `PUT /databases/{name}` method")
+			return strings.Contains(log, "The `POST /databases` method for creating a new DB is deprecated. Upgrade your snps-ai-graphdb server to use the newer `PUT /databases/{name}` method")
 		}))
 	}
 
@@ -614,7 +614,7 @@ func TestExport(t *testing.T) {
 					require.NoError(t, os.Mkdir(unarchivedPath, os.ModePerm))
 					require.NoError(t, extractTarGz(export, unarchivedPath))
 
-					exportDir := path.Join(unarchivedPath, "aali-graphdb-export")
+					exportDir := path.Join(unarchivedPath, "snps-ai-graphdb-export")
 					assert.DirExists(t, exportDir)
 					assert.FileExists(t, path.Join(exportDir, "copy.cypher"))
 					assert.FileExists(t, path.Join(exportDir, "schema.cypher"))

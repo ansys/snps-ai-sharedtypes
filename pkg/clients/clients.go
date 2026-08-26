@@ -31,7 +31,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/ansys/aali-sharedtypes/pkg/config"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"

@@ -8,7 +8,7 @@ config
 godoc
 sharedtypes
 typeconverters
-aaliagentgrpc
-aaliflowkitgrpc
-aali_graphdb
+agentgrpc
+flowkitgrpc
+snps_ai_graphdb
 Datadog
