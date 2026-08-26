@@ -23,7 +23,7 @@ repos:
   hooks:
   - id: go-generate
     name: go generate
-    entry: go generate ./pkg/snps_ai_graphdb
+    entry: go generate ./pkg/graphdb
     language: system
     pass_filenames: false
     stages:

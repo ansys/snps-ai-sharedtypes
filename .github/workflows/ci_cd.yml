@@ -53,7 +53,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - run: go test $(go list ./pkg/... | grep -v 'snps_ai_graphdb')  # run all the tests except for those in snps_ai_graphdb (those are run below in separate job)
+      - run: go test $(go list ./pkg/... | grep -v 'pkg/graphdb')  # run all the tests except for those in pkg/graphdb (those are run below in separate job)
 
   graphdb-client-unit-tests:
     uses: ./.github/workflows/graphdb-client-tests.yml

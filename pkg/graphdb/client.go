@@ -203,7 +203,7 @@ func (client Client) CreateDatabase(name string) error {
 }
 
 func (client Client) createDatabasePost(name string) error {
-	client.logger.Warn("The `POST /databases` method for creating a new DB is deprecated. Upgrade your snps-ai-graphdb server to use the newer `PUT /databases/{name}` method")
+	client.logger.Warn("The `POST /databases` method for creating a new DB is deprecated. Upgrade your aali-graphdb server to use the newer `PUT /databases/{name}` method")
 
 	u, err := url.JoinPath(client.address, "databases")
 	if err != nil {
