@@ -1357,6 +1357,28 @@ func TestWriteFormattedLogHeaderOnFreshFile(t *testing.T) {
 	}
 }
 
+// TestWriteFormattedLogFitsWidestAppName verifies the widest supported app name stays on one line.
+func TestWriteFormattedLogFitsWidestAppName(t *testing.T) {
+	localLogFile := filepath.Join(t.TempDir(), "test_app_width.log")
+	err := writeFormattedLogToFile(localLogFile, "snps-ai-flowkit", "2026-07-14 10:00:00.000", "info", "test.Func", "test.go:1", "Test entry", "", nil, nil)
+	if err != nil {
+		t.Fatalf("writeFormattedLogToFile failed: %v", err)
+	}
+
+	content, err := os.ReadFile(localLogFile)
+	if err != nil {
+		t.Fatalf("Failed to read: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimSpace(string(content)), "\n")
+	if len(lines) != 3 {
+		t.Fatalf("Expected header, separator, and one log line; got %d lines", len(lines))
+	}
+	if !strings.Contains(lines[2], "| snps-ai-flowkit | INFO") {
+		t.Errorf("App name was not kept on one line: %q", lines[2])
+	}
+}
+
 // TestWrapTextWordsNoInfiniteLoop verifies that wrapTextWords never hangs
 // on strings with no spaces or only leading-indent spaces.
 func TestWrapTextWordsNoInfiniteLoop(t *testing.T) {

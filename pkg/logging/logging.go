@@ -814,7 +814,7 @@ func shortenCaller(caller string) string {
 // Column widths for the local log file format.
 const (
 	colWidthTimestamp = 23
-	colWidthApp       = 12
+	colWidthApp       = 15
 	colWidthLevel     = 5
 	colWidthMessage   = 60
 	colWidthFunction  = 50
