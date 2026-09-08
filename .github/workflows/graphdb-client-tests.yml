@@ -22,7 +22,7 @@ jobs:
       - if: ${{ github.event_name == 'workflow_dispatch' }}
         run: echo "IMAGE_NAMES=[\"${{ inputs.image_name }}\"]" | tee -a "$GITHUB_ENV"
       - if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: echo "IMAGE_NAMES=[\"ghcr.io/ansys/snps-ai-graphdb:edge\", \"ghcr.io/ansys/snps-ai-graphdb:latest\", \"ghcr.io/ansys/snps-ai-graphdb:v1.0.0\"]" | tee -a "$GITHUB_ENV"
+        run: echo "IMAGE_NAMES=[\"ghcr.io/ansys/snps-ai-graphdb:edge\", \"ghcr.io/ansys/snps-ai-graphdb:latest\", \"ghcr.io/ansys/snps-ai-graphdb:v1.3.1\"]" | tee -a "$GITHUB_ENV"
       - id: build-matrix
         run: |
           matrix=$(echo "$IMAGE_NAMES" | jq -c "[{image: .[], api_key: true}, {image: .[], api_key: false}]")
