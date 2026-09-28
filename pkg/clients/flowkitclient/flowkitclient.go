@@ -248,7 +248,7 @@ type ApprovalResponse struct {
 // Returns:
 //   - map[string]sharedtypes.FilledInputOutput: the outputs of the function
 //   - error: an error message if the gRPC call fails
-func RunFunction(ctx *logging.ContextMap, functionName string, inputs map[string]sharedtypes.FilledInputOutput, responseChannel chan sharedtypes.ClientResponse) (outputs map[string]sharedtypes.FilledInputOutput, err error) {
+func RunFunction(ctx *logging.ContextMap, functionName string, inputs map[string]sharedtypes.FilledInputOutput, responseChannel chan sharedtypes.ClientResponse, conversationHistory *[]sharedtypes.ConversationHistoryMessage, workflowRunLock *sync.RWMutex) (outputs map[string]sharedtypes.FilledInputOutput, err error) {
 	defer func() {
 		r := recover()
 		if r != nil {
@@ -385,10 +385,25 @@ out:
 			}
 		case InfoMessage, StatusMessage:
 			// send a message to the response channel with the info or status message
+			instructionId := strings.ReplaceAll(uuid.New().String(), "-", "")
 			responseChannel <- sharedtypes.ClientResponse{
-				InstructionId: strings.ReplaceAll(uuid.New().String(), "-", ""),
+				InstructionId: instructionId,
 				Type:          string(res.Type),
 				ChatData:      res.Message,
+			}
+			// append info message to conversation history
+			if ResponseType(res.Type) == InfoMessage {
+				func() {
+					workflowRunLock.Lock()
+					defer workflowRunLock.Unlock()
+					// append message to conversation history
+					workflowMessage := sharedtypes.ConversationHistoryMessage{
+						MessageId: instructionId,
+						Role:      "assistant",
+						Content:   res.Message,
+					}
+					*conversationHistory = append(*conversationHistory, workflowMessage)
+				}()
 			}
 		case GetApproval:
 			// create a channel to receive the approval response from the client
