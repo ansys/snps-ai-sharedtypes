@@ -145,11 +145,15 @@ func TestOperationRouting(t *testing.T) {
 			return err
 		}},
 		{"save", "/api/v1/save", "{}", func(c *Client) error {
-			_, err := c.Save(SaveRequest{Database: "db", OutputPath: "/o.zip"})
+			_, err := c.Save(SaveRequest{Database: "db", ArchivePath: "/o.zip"})
 			return err
 		}},
 		{"set_answer_prompt", "/api/v1/set_answer_prompt", "{}", func(c *Client) error {
 			_, err := c.SetAnswerPrompt(SetAnswerPromptRequest{Database: "db", AnswerPrompt: "p"})
+			return err
+		}},
+		{"set_schema", "/api/v1/set_schema", "{}", func(c *Client) error {
+			_, err := c.SetSchema(SetSchemaRequest{Database: "db", Schema: "s"})
 			return err
 		}},
 		{"query", "/api/v1/query", "{}", func(c *Client) error {
@@ -158,6 +162,50 @@ func TestOperationRouting(t *testing.T) {
 		}},
 		{"resume", "/api/v1/resume", "{}", func(c *Client) error {
 			_, err := c.Resume(ResumeRequest{Database: "db", ArchivePath: "/a.zip"})
+			return err
+		}},
+		{"remove_page", "/api/v1/remove_page", "{}", func(c *Client) error {
+			_, err := c.RemovePage(RemovePageRequest{Database: "db", Path: "p.md"})
+			return err
+		}},
+		{"list_scopes", "/api/v1/list_scopes", "[]", func(c *Client) error {
+			_, err := c.ListScopes(ListScopesRequest{Database: "db"})
+			return err
+		}},
+		{"create_scope", "/api/v1/create_scope", "{}", func(c *Client) error {
+			_, err := c.CreateScope(CreateScopeRequest{Database: "db", Name: "s"})
+			return err
+		}},
+		{"delete_scope", "/api/v1/delete_scope", "{}", func(c *Client) error {
+			_, err := c.DeleteScope(DeleteScopeRequest{Database: "db", Scope: "s"})
+			return err
+		}},
+		{"list_pages", "/api/v1/list_pages", "[]", func(c *Client) error {
+			_, err := c.ListPages(ListPagesRequest{Database: "db"})
+			return err
+		}},
+		{"get_page", "/api/v1/get_page", "{}", func(c *Client) error {
+			_, err := c.GetPage(GetPageRequest{Database: "db", Path: "p.md"})
+			return err
+		}},
+		{"history", "/api/v1/history", "[]", func(c *Client) error {
+			_, err := c.History(HistoryRequest{Database: "db", Path: "p.md"})
+			return err
+		}},
+		{"diff", "/api/v1/diff", "{}", func(c *Client) error {
+			_, err := c.Diff(DiffRequest{Database: "db", Path: "p.md"})
+			return err
+		}},
+		{"list_conflicts", "/api/v1/list_conflicts", "[]", func(c *Client) error {
+			_, err := c.ListConflicts(ListConflictsRequest{Database: "db"})
+			return err
+		}},
+		{"resolve_conflict", "/api/v1/resolve_conflict", "{}", func(c *Client) error {
+			_, err := c.ResolveConflict(ResolveConflictRequest{Database: "db", Scope: "s", Path: "p.md", Author: "alice", Resolution: "own"})
+			return err
+		}},
+		{"list_change_sets", "/api/v1/list_change_sets", "[]", func(c *Client) error {
+			_, err := c.ListChangeSets(ListChangeSetsRequest{Database: "db"})
 			return err
 		}},
 	}
@@ -192,6 +240,24 @@ func TestApiKeyOmittedWhenEmpty(t *testing.T) {
 	}
 }
 
+// TestWithApiKey checks the replaced key on the next request and no header after an empty key.
+func TestWithApiKey(t *testing.T) {
+	var rec captured
+	c := newTestClient(t, "test-key", http.StatusOK, "[]", &rec)
+	if _, err := c.WithApiKey("other-key").ListDatabases(); err != nil {
+		t.Fatalf("ListDatabases: %v", err)
+	}
+	if rec.apiKey != "other-key" {
+		t.Errorf("api-key header = %q, want other-key", rec.apiKey)
+	}
+	if _, err := c.WithApiKey("").ListDatabases(); err != nil {
+		t.Fatalf("ListDatabases: %v", err)
+	}
+	if rec.apiKey != "" {
+		t.Errorf("api-key header = %q, want empty after WithApiKey(\"\")", rec.apiKey)
+	}
+}
+
 func TestQuery(t *testing.T) {
 	var rec captured
 	resp := `{"answer":"the answer","revision":"0123456789ab","tokens":{"input":10,"output":20,"cache_read":1,"cache_creation":2,"estimated":true}}`
@@ -223,6 +289,120 @@ func TestQuery(t *testing.T) {
 	want := Tokens{Input: 10, Output: 20, CacheRead: 1, CacheCreation: 2, Estimated: true}
 	if got.Tokens != want {
 		t.Errorf("Tokens = %+v, want %+v", got.Tokens, want)
+	}
+}
+
+// TestWriteBodiesOnWire checks every author, scope, change and filing field and the archive_path on the wire.
+func TestWriteBodiesOnWire(t *testing.T) {
+	change := map[string]any{"author": "alice", "scope": "team/a", "message": "m", "priority": true}
+	filing := map[string]any{"author": "alice", "scope": "team/a", "message": "m", "priority": true, "type": "guide", "description": "d", "language": "en"}
+	cases := []struct {
+		name string
+		want map[string]any
+		call func(*Client) error
+	}{
+		{"import_folder", map[string]any{"author": "alice", "scope": "team/a", "message": "m", "priority": true, "replace": true, "description": "d"}, func(c *Client) error {
+			_, err := c.ImportFolder(ImportFolderRequest{Database: "db", FolderPath: "/p", Replace: true, Description: "d", Scope: "team/a", Author: "alice", Message: "m", Priority: true})
+			return err
+		}},
+		{"ingest_folder", change, func(c *Client) error {
+			_, err := c.IngestFolder(IngestFolderRequest{Database: "db", FolderPath: "/p", Scope: "team/a", Author: "alice", Message: "m", Priority: true})
+			return err
+		}},
+		{"ingest_file", filing, func(c *Client) error {
+			_, err := c.IngestFile(IngestFileRequest{Database: "db", FilePath: "/p/f.md", Type: "guide", Description: "d", Language: "en", Scope: "team/a", Author: "alice", Message: "m", Priority: true})
+			return err
+		}},
+		{"ingest_text", filing, func(c *Client) error {
+			_, err := c.IngestText(IngestTextRequest{Database: "db", Name: "n", Content: "c", Type: "guide", Description: "d", Language: "en", Scope: "team/a", Author: "alice", Message: "m", Priority: true})
+			return err
+		}},
+		{"remove_content", change, func(c *Client) error {
+			_, err := c.RemoveContent(RemoveContentRequest{Database: "db", Request: "r", Scope: "team/a", Author: "alice", Message: "m", Priority: true})
+			return err
+		}},
+		{"remove_page", map[string]any{"path": "p.md", "author": "alice", "scope": "team/a", "message": "m", "priority": true}, func(c *Client) error {
+			_, err := c.RemovePage(RemovePageRequest{Database: "db", Path: "p.md", Scope: "team/a", Author: "alice", Message: "m", Priority: true})
+			return err
+		}},
+		{"save", map[string]any{"archive_path": "/o.zip"}, func(c *Client) error {
+			_, err := c.Save(SaveRequest{Database: "db", ArchivePath: "/o.zip"})
+			return err
+		}},
+		{"set_schema_text", map[string]any{"schema": "s"}, func(c *Client) error {
+			_, err := c.SetSchema(SetSchemaRequest{Database: "db", Schema: "s"})
+			return err
+		}},
+		{"set_schema_file", map[string]any{"file_path": "/p/schema.md"}, func(c *Client) error {
+			_, err := c.SetSchema(SetSchemaRequest{Database: "db", FilePath: "/p/schema.md"})
+			return err
+		}},
+		{"query", map[string]any{"scope": "team/a"}, func(c *Client) error {
+			_, err := c.Query(QueryRequest{Database: "db", Query: "q", Scope: "team/a"})
+			return err
+		}},
+		{"resume", map[string]any{"archive_path": "/a.zip", "replace": true}, func(c *Client) error {
+			_, err := c.Resume(ResumeRequest{Database: "db", ArchivePath: "/a.zip", Replace: true})
+			return err
+		}},
+		{"create_scope", map[string]any{"parent": "team", "name": "a"}, func(c *Client) error {
+			_, err := c.CreateScope(CreateScopeRequest{Database: "db", Parent: "team", Name: "a"})
+			return err
+		}},
+		{"delete_scope", map[string]any{"scope": "team/a"}, func(c *Client) error {
+			_, err := c.DeleteScope(DeleteScopeRequest{Database: "db", Scope: "team/a"})
+			return err
+		}},
+		{"list_pages", map[string]any{"scope": "team/a"}, func(c *Client) error {
+			_, err := c.ListPages(ListPagesRequest{Database: "db", Scope: "team/a"})
+			return err
+		}},
+		{"get_page", map[string]any{"path": "p.md", "scope": "team/a"}, func(c *Client) error {
+			_, err := c.GetPage(GetPageRequest{Database: "db", Path: "p.md", Scope: "team/a"})
+			return err
+		}},
+		{"history", map[string]any{"path": "p.md", "scope": "team/a"}, func(c *Client) error {
+			_, err := c.History(HistoryRequest{Database: "db", Path: "p.md", Scope: "team/a"})
+			return err
+		}},
+		{"diff", map[string]any{"path": "p.md", "source_scope": "team", "target_scope": "team/a"}, func(c *Client) error {
+			_, err := c.Diff(DiffRequest{Database: "db", Path: "p.md", SourceScope: "team", TargetScope: "team/a"})
+			return err
+		}},
+		{"list_conflicts", map[string]any{"scope": "-"}, func(c *Client) error {
+			_, err := c.ListConflicts(ListConflictsRequest{Database: "db", Scope: "-"})
+			return err
+		}},
+		{"resolve_conflict", map[string]any{"scope": "team/a", "path": "p.md", "author": "alice", "resolution": "merged", "content": "c", "message": "m"}, func(c *Client) error {
+			_, err := c.ResolveConflict(ResolveConflictRequest{Database: "db", Scope: "team/a", Path: "p.md", Author: "alice", Resolution: "merged", Content: "c", Message: "m"})
+			return err
+		}},
+		{"list_change_sets", map[string]any{"scope": "team/a", "since": "2026-09-29T00:00:00Z"}, func(c *Client) error {
+			_, err := c.ListChangeSets(ListChangeSetsRequest{Database: "db", Scope: "team/a", Since: "2026-09-29T00:00:00Z"})
+			return err
+		}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var rec captured
+			resp := "{}"
+			if strings.HasPrefix(tc.name, "list_") || tc.name == "history" {
+				resp = "[]"
+			}
+			c := newTestClient(t, "test-key", http.StatusOK, resp, &rec)
+			if err := tc.call(c); err != nil {
+				t.Fatalf("%s: %v", tc.name, err)
+			}
+			got := bodyMap(t, rec.body)
+			if got["database"] != "db" {
+				t.Errorf("database = %v, want db in %s", got["database"], rec.body)
+			}
+			for key, want := range tc.want {
+				if got[key] != want {
+					t.Errorf("%s = %v, want %v in %s", key, got[key], want, rec.body)
+				}
+			}
+		})
 	}
 }
 

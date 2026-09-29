@@ -58,6 +58,12 @@ func DefaultClient(address string, apiKey string) (*Client, error) {
 	return NewClient(address, apiKey, client)
 }
 
+// WithApiKey replaces the api key.
+func (client *Client) WithApiKey(apiKey string) *Client {
+	client.apiKey = apiKey
+	return client
+}
+
 // route builds the full URL for an /api/v1 operation.
 func (client Client) route(op string) (string, error) {
 	return url.JoinPath(client.address, "api", "v1", op)
@@ -189,10 +195,58 @@ func (client Client) SetAnswerPrompt(req SetAnswerPromptRequest) (DatabaseInfo, 
 	return postJSON[DatabaseInfo](client, "set_answer_prompt", req)
 }
 
+func (client Client) SetSchema(req SetSchemaRequest) (DatabaseInfo, error) {
+	return postJSON[DatabaseInfo](client, "set_schema", req)
+}
+
 func (client Client) Query(req QueryRequest) (QueryResponse, error) {
 	return postJSON[QueryResponse](client, "query", req)
 }
 
 func (client Client) Resume(req ResumeRequest) (MutationResponse, error) {
 	return postJSON[MutationResponse](client, "resume", req)
+}
+
+func (client Client) RemovePage(req RemovePageRequest) (MutationResponse, error) {
+	return postJSON[MutationResponse](client, "remove_page", req)
+}
+
+func (client Client) ListScopes(req ListScopesRequest) ([]Scope, error) {
+	return postJSON[[]Scope](client, "list_scopes", req)
+}
+
+func (client Client) CreateScope(req CreateScopeRequest) (Scope, error) {
+	return postJSON[Scope](client, "create_scope", req)
+}
+
+func (client Client) DeleteScope(req DeleteScopeRequest) (ScopeDeletedResponse, error) {
+	return postJSON[ScopeDeletedResponse](client, "delete_scope", req)
+}
+
+func (client Client) ListPages(req ListPagesRequest) ([]PageEntry, error) {
+	return postJSON[[]PageEntry](client, "list_pages", req)
+}
+
+func (client Client) GetPage(req GetPageRequest) (Page, error) {
+	return postJSON[Page](client, "get_page", req)
+}
+
+func (client Client) History(req HistoryRequest) ([]Version, error) {
+	return postJSON[[]Version](client, "history", req)
+}
+
+func (client Client) Diff(req DiffRequest) (DiffReport, error) {
+	return postJSON[DiffReport](client, "diff", req)
+}
+
+func (client Client) ListConflicts(req ListConflictsRequest) ([]Conflict, error) {
+	return postJSON[[]Conflict](client, "list_conflicts", req)
+}
+
+func (client Client) ResolveConflict(req ResolveConflictRequest) (ResolveResponse, error) {
+	return postJSON[ResolveResponse](client, "resolve_conflict", req)
+}
+
+func (client Client) ListChangeSets(req ListChangeSetsRequest) ([]ChangeSetEntry, error) {
+	return postJSON[[]ChangeSetEntry](client, "list_change_sets", req)
 }

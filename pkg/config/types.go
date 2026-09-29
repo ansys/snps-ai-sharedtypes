@@ -159,16 +159,7 @@ type Config struct {
 	KNOWLEDGE_DB_ENDPOINT string `yaml:"KNOWLEDGE_DB_ENDPOINT" json:"KNOWLEDGEDBENDPOINT"`
 	GRAPHDB_ADDRESS       string `yaml:"GRAPHDB_ADDRESS" json:"GRAPHDBADDRESS"`
 	GRAPHDB_API_KEY       string `yaml:"GRAPHDB_API_KEY" json:"GRAPHDBAPIKEY"`
-	WIKI_ADDRESS          string `yaml:"WIKI_ADDRESS" json:"WIKIADDRESS"`
-	WIKI_API_KEY          string `yaml:"WIKI_API_KEY" json:"WIKIAPIKEY"`
-	WIKI_TRANSPORT        string `yaml:"WIKI_TRANSPORT" json:"WIKITRANSPORT"`
-	WIKI_DB_PATH          string `yaml:"WIKI_DB_PATH" json:"WIKIDBPATH"`
-	WIKI_API_PORT         int    `yaml:"WIKI_API_PORT" json:"WIKIAPIPORT"`
-	WIKI_LLM_PROVIDER     string `yaml:"WIKI_LLM_PROVIDER" json:"WIKILLMPROVIDER"`
-	WIKI_LLM_API_KEY      string `yaml:"WIKI_LLM_API_KEY" json:"WIKILLMAPIKEY"`
-	WIKI_LLM_MODEL        string `yaml:"WIKI_LLM_MODEL" json:"WIKILLMMODEL"`
-	WIKI_LLM_MAX_TOKENS   int    `yaml:"WIKI_LLM_MAX_TOKENS" json:"WIKILLMMAXTOKENS"`
-	WIKI_LLM_ENDPOINT     string `yaml:"WIKI_LLM_ENDPOINT" json:"WIKILLMENDPOINT"`
+	WIKI_ENDPOINT         string `yaml:"WIKI_ENDPOINT" json:"WIKIENDPOINT"`
 	QDRANT_HOST           string `yaml:"QDRANT_HOST" json:"QDRANTHOST"`
 	QDRANT_PORT           int    `yaml:"QDRANT_PORT" json:"QDRANTPORT"`
 	QDRANT_API_KEY        string `yaml:"QDRANT_API_KEY" json:"QDRANTAPIKEY"`
@@ -179,6 +170,25 @@ type Config struct {
 	/////////////////
 	FLOWKIT_PYTHON_ADDRESS string `yaml:"FLOWKIT_PYTHON_ADDRESS" json:"FLOWKITPYTHONADDRESS"`
 	FLOWKIT_PYTHON_API_KEY string `yaml:"FLOWKIT_PYTHON_API_KEY" json:"FLOWKITPYTHONAPIKEY"`
+
+	// Wiki
+	///////
+	WIKI_ADDRESS                     string   `yaml:"WIKI_ADDRESS" json:"WIKIADDRESS"`
+	WIKI_API_KEY                     string   `yaml:"WIKI_API_KEY" json:"WIKIAPIKEY"`
+	WIKI_TRANSPORT                   string   `yaml:"WIKI_TRANSPORT" json:"WIKITRANSPORT"`
+	WIKI_API_PORT                    int      `yaml:"WIKI_API_PORT" json:"WIKIAPIPORT"`
+	WIKI_READ_ONLY                   bool     `yaml:"WIKI_READ_ONLY" json:"WIKIREADONLY"`
+	WIKI_STORAGE_DRIVER              string   `yaml:"WIKI_STORAGE_DRIVER" json:"WIKISTORAGEDRIVER"`
+	WIKI_STORAGE_DSN                 string   `yaml:"WIKI_STORAGE_DSN" json:"WIKISTORAGEDSN"`
+	WIKI_DB_PATH                     string   `yaml:"WIKI_DB_PATH" json:"WIKIDBPATH"`
+	WIKI_SCOPE_LEVELS                []string `yaml:"WIKI_SCOPE_LEVELS" json:"WIKISCOPELEVELS"`
+	WIKI_SCOPE_APPROVAL              string   `yaml:"WIKI_SCOPE_APPROVAL" json:"WIKISCOPEAPPROVAL"`
+	WIKI_LLM_PROVIDER                string   `yaml:"WIKI_LLM_PROVIDER" json:"WIKILLMPROVIDER"`
+	WIKI_LLM_API_KEY                 string   `yaml:"WIKI_LLM_API_KEY" json:"WIKILLMAPIKEY"`
+	WIKI_LLM_MODEL                   string   `yaml:"WIKI_LLM_MODEL" json:"WIKILLMMODEL"`
+	WIKI_LLM_MAX_TOKENS              int      `yaml:"WIKI_LLM_MAX_TOKENS" json:"WIKILLMMAXTOKENS"`
+	WIKI_LLM_ENDPOINT                string   `yaml:"WIKI_LLM_ENDPOINT" json:"WIKILLMENDPOINT"`
+	WIKI_LLM_REQUEST_TIMEOUT_SECONDS int      `yaml:"WIKI_LLM_REQUEST_TIMEOUT_SECONDS" json:"WIKILLMREQUESTTIMEOUTSECONDS"`
 
 	// Database Settings
 	////////////////////
