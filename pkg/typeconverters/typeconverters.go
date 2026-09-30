@@ -30,6 +30,7 @@ import (
 
 	"github.com/ansys/snps-ai-sharedtypes/pkg/graphdb"
 	"github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/wiki"
 	"github.com/coder/websocket"
 )
 
@@ -245,6 +246,20 @@ func init() {
 
 		// Custom types - graphdb
 		"ParameterMap": jsonMapConverter[graphdb.ParameterMap](),
+
+		// Custom types - wiki (structs)
+		"Page":                 jsonMapConverter[wiki.Page](),
+		"Scope":                jsonMapConverter[wiki.Scope](),
+		"DiffReport":           jsonMapConverter[wiki.DiffReport](),
+		"ResolveResponse":      jsonMapConverter[wiki.ResolveResponse](),
+		"ScopeDeletedResponse": jsonMapConverter[wiki.ScopeDeletedResponse](),
+
+		// Custom types - wiki (slices)
+		"[]Scope":          jsonSliceConverter[[]wiki.Scope](),
+		"[]PageEntry":      jsonSliceConverter[[]wiki.PageEntry](),
+		"[]Version":        jsonSliceConverter[[]wiki.Version](),
+		"[]Conflict":       jsonSliceConverter[[]wiki.Conflict](),
+		"[]ChangeSetEntry": jsonSliceConverter[[]wiki.ChangeSetEntry](),
 
 		// Custom types - sharedtypes (structs)
 		"DbArrayFilter":            jsonMapConverter[sharedtypes.DbArrayFilter](),
