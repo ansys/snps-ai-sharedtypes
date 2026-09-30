@@ -28,6 +28,7 @@ import (
 	"testing"
 
 	"github.com/ansys/snps-ai-sharedtypes/pkg/sharedtypes"
+	"github.com/ansys/snps-ai-sharedtypes/pkg/wiki"
 )
 
 func TestJSONToGo(t *testing.T) {
@@ -314,6 +315,9 @@ func TestRoundTrip(t *testing.T) {
 		{"[]string", []string{"a", "b", "c"}, "[]string"},
 		{"[]int", []int{1, 2, 3}, "[]int"},
 		{"map[string]string", map[string]string{"key": "value"}, "map[string]string"},
+		{"Page", wiki.Page{Path: "meshing/sizing.md", Content: "use 1 mm"}, "Page"},
+		{"[]Scope", []wiki.Scope{{Path: "eng", Level: "department"}}, "[]Scope"},
+		{"[]PageEntry", []wiki.PageEntry{{Path: "meshing/sizing.md", Standard: false}}, "[]PageEntry"},
 	}
 
 	for _, test := range tests {
