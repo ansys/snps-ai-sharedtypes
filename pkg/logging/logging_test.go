@@ -31,9 +31,11 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/ansys/snps-ai-sharedtypes/pkg/config"
 	"go.uber.org/zap/zapcore"
@@ -1406,5 +1408,41 @@ func TestWrapTextWordsNoInfiniteLoop(t *testing.T) {
 		if len(line) > 15 {
 			t.Errorf("Line exceeds width 15: %q (len=%d)", line, len(line))
 		}
+	}
+}
+
+// TestWrapTextLargeInputLinearMemory guards against copying the remainder on every line (quadratic memory).
+func TestWrapTextLargeInputLinearMemory(t *testing.T) {
+	s := strings.Repeat(`{"key":"value","n":1},`, 1<<20/22)
+	for name, wrap := range map[string]func(string, int) []string{
+		"wrapText": wrapText, "wrapTextDot": wrapTextDot, "wrapTextWords": wrapTextWords,
+	} {
+		runtime.GC()
+		var before, after runtime.MemStats
+		runtime.ReadMemStats(&before)
+		lines := wrap(s, colWidthMessage)
+		runtime.ReadMemStats(&after)
+
+		if allocated := after.TotalAlloc - before.TotalAlloc; allocated > 32<<20 {
+			t.Errorf("%s allocated %d MB for a 1 MB input", name, allocated>>20)
+		}
+		if joined := strings.ReplaceAll(strings.Join(lines, ""), " ", ""); joined != strings.ReplaceAll(s, " ", "") {
+			t.Errorf("%s lost characters while wrapping", name)
+		}
+	}
+}
+
+func TestTruncateLogMessage(t *testing.T) {
+	if got := truncateLogMessage("short", 10); got != "short" {
+		t.Errorf("short message changed: %q", got)
+	}
+	got := truncateLogMessage(strings.Repeat("a", 20), 10)
+	if want := strings.Repeat("a", 10) + " ... [truncated 10 bytes]"; got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+	// "é" is 2 bytes; cutting at 3 must not split it
+	got = truncateLogMessage("aaéaaa", 3)
+	if !utf8.ValidString(got) || !strings.HasPrefix(got, "aa ...") {
+		t.Errorf("truncation split a rune: %q", got)
 	}
 }

@@ -32,6 +32,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/coder/websocket"
 
@@ -843,64 +844,73 @@ var localLogHeader = fmt.Sprintf("%-*s | %-*s | %-*s | %-*s | %-*s | %-*s | %-*s
 		strings.Repeat("-", colWidthStack),
 		strings.Repeat("-", colWidthContext))
 
+// maxLocalLogMessageLen caps the message length written to the local log file.
+const maxLocalLogMessageLen = 8 << 10
+
+// wrapWith splits s into lines of at most width characters; continuation lines are indented with 2 spaces.
+// breakAt returns the split index within the current (indented) line; invalid indices fall back to a hard break.
+// Only the current line is copied, never the remainder, so memory stays linear in len(s).
+func wrapWith(s string, width int, trimLeft bool, breakAt func(line string) int) []string {
+	var lines []string
+	indent := ""
+	for len(indent)+len(s) > width {
+		line := indent + s[:width-len(indent)]
+		at := breakAt(line)
+		if at <= len(indent) || at > width {
+			at = width
+		}
+		lines = append(lines, line[:at])
+		s = s[at-len(indent):]
+		if trimLeft {
+			s = strings.TrimLeft(s, " ")
+		}
+		indent = "  "
+	}
+	return append(lines, indent+s)
+}
+
 // wrapText splits a string into lines of at most width characters, breaking at hard character boundaries.
 // Continuation lines are indented with 2 spaces (reducing effective width by 2).
 func wrapText(s string, width int) []string {
-	if len(s) <= width {
-		return []string{s}
-	}
-	var lines []string
-	for len(s) > width {
-		lines = append(lines, s[:width])
-		s = "  " + s[width:]
-	}
-	lines = append(lines, s)
-	return lines
+	return wrapWith(s, width, false, func(string) int { return width })
 }
 
 // wrapTextDot splits a string into lines of at most width characters, preferring to break after '.' boundaries.
 // This is intended for qualified function names (e.g. "package.FunctionName") so that breaks look natural.
 // Falls back to hard character break when no suitable dot is found.
 func wrapTextDot(s string, width int) []string {
-	if len(s) <= width {
-		return []string{s}
-	}
-	var lines []string
-	for len(s) > width {
-		// Prefer breaking after the last '.' within the allowed width
-		breakAt := strings.LastIndex(s[:width], ".")
+	return wrapWith(s, width, false, func(line string) int {
+		breakAt := strings.LastIndex(line, ".")
 		if breakAt < 1 || breakAt < width/4 {
-			// No good dot break found — hard break
-			breakAt = width
-		} else {
-			breakAt++ // include the dot on the first line
+			return width
 		}
-		lines = append(lines, s[:breakAt])
-		s = "  " + s[breakAt:]
-	}
-	lines = append(lines, s)
-	return lines
+		return breakAt + 1 // include the dot on the current line
+	})
 }
 
 // wrapTextWords splits a string into lines of at most width characters, preferring to break at word boundaries.
 // Continuation lines are indented with 2 spaces.
 func wrapTextWords(s string, width int) []string {
-	if len(s) <= width {
-		return []string{s}
-	}
-	var lines []string
-	for len(s) > width {
-		// Find the last space within the allowed width, but not in the leading indent
-		breakAt := strings.LastIndex(s[:width], " ")
+	return wrapWith(s, width, true, func(line string) int {
+		breakAt := strings.LastIndex(line, " ")
 		if breakAt < width/4 {
 			// Space only found very early (e.g. in the indent) — hard break to ensure progress
-			breakAt = width
+			return width
 		}
-		lines = append(lines, s[:breakAt])
-		s = "  " + strings.TrimLeft(s[breakAt:], " ")
+		return breakAt
+	})
+}
+
+// truncateLogMessage shortens s to at most max bytes (on a UTF-8 boundary) and notes how much was dropped.
+func truncateLogMessage(s string, max int) string {
+	if len(s) <= max {
+		return s
 	}
-	lines = append(lines, s)
-	return lines
+	cut := max
+	for cut > 0 && !utf8.RuneStart(s[cut]) {
+		cut--
+	}
+	return fmt.Sprintf("%s ... [truncated %d bytes]", s[:cut], len(s)-cut)
 }
 
 // writeFormattedLogToFile writes a log entry to a file in a human-readable columnar format.
@@ -932,6 +942,7 @@ func writeFormattedLogToFile(filename, app, timeStr, level, function, caller, me
 
 	// Replace embedded newlines with spaces to preserve table alignment,
 	// then strip trailing whitespace.
+	message = truncateLogMessage(message, maxLocalLogMessageLen)
 	message = strings.ReplaceAll(message, "\r\n", " ")
 	message = strings.ReplaceAll(message, "\n", " ")
 	message = strings.ReplaceAll(message, "\r", " ")
