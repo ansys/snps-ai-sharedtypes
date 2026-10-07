@@ -145,10 +145,11 @@ type Config struct {
 
 	// KVDB
 	///////
-	KVDB_ADDRESS   string `yaml:"KVDB_ADDRESS" json:"KVDBADDRESS"`
-	KVDB_API_KEY   string `yaml:"KVDB_API_KEY" json:"KVDBAPIKEY"`
-	KVDB_PATH      string `yaml:"KVDB_PATH" json:"KVDBPATH"`
-	KVDB_IN_MEMORY bool   `yaml:"KVDB_IN_MEMORY" json:"KVDBINMEMORY"`
+	KVDB_ADDRESS           string `yaml:"KVDB_ADDRESS" json:"KVDBADDRESS"`
+	KVDB_API_KEY           string `yaml:"KVDB_API_KEY" json:"KVDBAPIKEY"`
+	KVDB_PATH              string `yaml:"KVDB_PATH" json:"KVDBPATH"`
+	KVDB_IN_MEMORY         bool   `yaml:"KVDB_IN_MEMORY" json:"KVDBINMEMORY"`
+	KVDB_MAX_ENTRY_SIZE_MB int    `yaml:"KVDB_MAX_ENTRY_SIZE_MB" json:"KVDBMAXENTRYSIZEMB"`
 
 	// Flowkit
 	//////////
