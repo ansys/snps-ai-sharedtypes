@@ -212,6 +212,7 @@ func init() {
 
 		// Slice types - JSON based
 		"[]interface{}": jsonSliceConverter[[]interface{}](),
+		"[][]any":       jsonSliceConverter[[][]any](),
 		"[]string":      jsonSliceConverter[[]string](),
 		"[][]string":    jsonSliceConverter[[][]string](),
 		"[]float32":     jsonSliceConverter[[]float32](),
