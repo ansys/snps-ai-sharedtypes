@@ -196,6 +196,11 @@ type Config struct {
 	GRAPHDB_ADDR      string `yaml:"GRAPHDB_ADDR" json:"GRAPHDBADDR"`
 	GRAPHDB_DATA_PATH string `yaml:"GRAPHDB_DATA_PATH" json:"GRAPHDBDATAPATH"`
 
+	// PostgreSQL Settings
+	//////////////////////
+	PG_HOST string `yaml:"PG_HOST" json:"PGHOST"`
+	PG_PORT uint16 `yaml:"PG_PORT" json:"PGPORT"`
+
 	// Proxy / data-shield
 	//////////////////////
 	// datashield uses these to determine which addresses to listen on for incoming proxy requests
