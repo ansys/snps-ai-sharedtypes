@@ -1,6 +1,6 @@
 module github.com/ansys/snps-ai-sharedtypes
 
-go 1.25.0
+go 1.26.10
 
 require (
 	cloud.google.com/go v0.121.1

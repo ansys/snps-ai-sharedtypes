@@ -6,7 +6,7 @@ Before working with Synopsys AI Tools Shared Types, you need Go and Git installe
 Go Installation
 ---------------
 
-Synopsys AI Tools Shared Types requires **Go 1.23.0 or higher**.
+Synopsys AI Tools Shared Types requires **Go 1.26.10 or higher**; on the Go 1.27 line, use 1.27.3 or higher.
 
 .. tab-set::
 
@@ -76,7 +76,7 @@ Check that everything is installed correctly:
 
 .. code:: bash
 
-   go version  # Should show 1.23.0 or higher
+   go version  # Should show 1.26.10 or higher
    git --version
 
 Next Steps
