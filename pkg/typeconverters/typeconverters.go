@@ -304,6 +304,13 @@ func init() {
 		"[]AedtCodeGenerationElement":      jsonSliceConverter[[]sharedtypes.AedtCodeGenerationElement](),
 		"[][]AedtApiDbResponse":            jsonSliceConverter[[][]sharedtypes.AedtApiDbResponse](), // batch responses
 		"[][]DbResponse":                   jsonSliceConverter[[][]sharedtypes.DbResponse](),        // batch responses
+
+		// generic qdrant type wrappers
+		"QdrantQuery":         jsonMapConverter[sharedtypes.QdrantQuery](),
+		"QdrantScoredPoint":   jsonMapConverter[sharedtypes.QdrantScoredPoint](),
+		"[]QdrantScoredPoint": jsonSliceConverter[[]sharedtypes.QdrantScoredPoint](),
+
+		"*float32": pointerConverter[float32](),
 	}
 }
 
@@ -336,6 +343,26 @@ func interfaceConverter() TypeConverter {
 		ToString: func(value interface{}) (string, error) {
 			if s, ok := value.(string); ok {
 				return s, nil
+			}
+			output, err := json.Marshal(value)
+			return string(output), err
+		},
+	}
+}
+
+func pointerConverter[T any]() TypeConverter {
+	return TypeConverter{
+		FromString: func(value string) (interface{}, error) {
+			if value == "" {
+				return nil, nil
+			}
+			var output T
+			err := json.Unmarshal([]byte(value), &output)
+			return &output, err
+		},
+		ToString: func(value interface{}) (string, error) {
+			if value == nil {
+				return "", nil
 			}
 			output, err := json.Marshal(value)
 			return string(output), err
