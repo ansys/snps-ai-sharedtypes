@@ -133,10 +133,12 @@ type RemoveContentRequest struct {
 	InstructionGuid string        `json:"instruction_guid,omitempty"`
 }
 
-// SaveRequest writes a database snapshot archive to a server-side path.
+// SaveRequest writes a database snapshot to a server-side archive or folder.
 type SaveRequest struct {
 	Database    string `json:"database"`
-	ArchivePath string `json:"archive_path"`
+	ArchivePath string `json:"archive_path,omitempty"`
+	FolderPath  string `json:"folder_path,omitempty"`
+	GitInit     bool   `json:"git_init,omitempty"`
 }
 
 // SetAnswerPromptRequest sets the answer prompt for a database.
@@ -163,10 +165,11 @@ type QueryRequest struct {
 	InstructionGuid string        `json:"instruction_guid,omitempty"`
 }
 
-// ResumeRequest restores a database from a snapshot archive on a server-side path.
+// ResumeRequest restores a database from a snapshot in a server-side archive or folder.
 type ResumeRequest struct {
 	Database        string        `json:"database"`
-	ArchivePath     string        `json:"archive_path"`
+	ArchivePath     string        `json:"archive_path,omitempty"`
+	FolderPath      string        `json:"folder_path,omitempty"`
 	Replace         bool          `json:"replace,omitempty"`
 	ModelCategory   []string      `json:"model_category,omitempty"`
 	ModelIDs        []string      `json:"model_ids,omitempty"`
@@ -217,6 +220,8 @@ type GetPageRequest struct {
 	Database string `json:"database"`
 	Path     string `json:"path"`
 	Scope    string `json:"scope,omitempty"`
+	// Version is an id from History; zero reads the current page.
+	Version int64 `json:"version,omitempty"`
 }
 
 // HistoryRequest lists the recorded versions of one page as a scope sees it, root when the scope is empty.
@@ -346,22 +351,39 @@ type MutationResponse struct {
 	Propagation Propagation  `json:"propagation"`
 	ChangeSet   ChangeSet    `json:"change_set"`
 	Skipped     []PageReason `json:"skipped,omitempty"`
+	NotMerged   []PageReason `json:"not_merged,omitempty"`
 	Replaced    Replacement  `json:"replaced,omitzero"`
 	Scopes      []ScopeCount `json:"scopes,omitempty"`
+	// Git is the state a save with git_init reports: initialized, existing or not found.
+	Git string `json:"git,omitempty"`
+}
+
+// AnswerImage is one image an answer uses; its content is the base64 of its bytes.
+type AnswerImage struct {
+	Path      string `json:"path"`
+	MediaType string `json:"media_type"`
+	Content   string `json:"content"`
 }
 
 // QueryResponse is the typed answer to a query.
 type QueryResponse struct {
-	Answer   string `json:"answer"`
-	Revision string `json:"revision"`
-	Tokens   Tokens `json:"tokens"`
+	Answer   string        `json:"answer"`
+	Images   []AnswerImage `json:"images,omitempty"`
+	Revision string        `json:"revision"`
+	Tokens   Tokens        `json:"tokens"`
 }
 
-// DatabaseInfo identifies a database and carries its description and current revision.
+// DatabaseInfo identifies a database and carries its description and current revision; ListDatabases leaves Source, StandardPages and RefreshTokens empty.
 type DatabaseInfo struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Revision    string `json:"revision"`
+	// Source is the archive or folder the last resume or import named.
+	Source string `json:"source,omitempty"`
+	// StandardPages is current, building or pending.
+	StandardPages string `json:"standard_pages,omitempty"`
+	// RefreshTokens is what the last background refresh of the standard pages spent.
+	RefreshTokens Tokens `json:"refresh_tokens,omitzero"`
 }
 
 // DeletedResponse acknowledges a dropped database.
@@ -404,6 +426,8 @@ type Page struct {
 
 // Version is one recorded change of a page: the scope it was written in, by whom, when and why.
 type Version struct {
+	// ID names the version to GetPage.
+	ID          int64  `json:"id,omitempty"`
 	Scope       string `json:"scope"`
 	Author      string `json:"author"`
 	CreatedAt   string `json:"created_at"`

@@ -118,6 +118,12 @@ func postJSON[T any](client Client, op string, body any) (T, error) {
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		errBody, _ := io.ReadAll(resp.Body)
+		var e struct {
+			Error string `json:"error"`
+		}
+		if json.Unmarshal(errBody, &e) == nil && e.Error != "" {
+			return zero, fmt.Errorf("unexpected status code: %v %q", resp.StatusCode, e.Error)
+		}
 		return zero, fmt.Errorf("unexpected status code: %v %q", resp.StatusCode, errBody)
 	}
 
