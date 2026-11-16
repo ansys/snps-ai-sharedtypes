@@ -27,6 +27,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -292,7 +293,7 @@ func TestQuery(t *testing.T) {
 	}
 }
 
-// TestWriteBodiesOnWire checks every author, scope, change and filing field and the archive_path on the wire.
+// TestWriteBodiesOnWire checks every author, scope, change and filing field, the archive and folder paths and the page version on the wire.
 func TestWriteBodiesOnWire(t *testing.T) {
 	change := map[string]any{"author": "alice", "scope": "team/a", "message": "m", "priority": true}
 	filing := map[string]any{"author": "alice", "scope": "team/a", "message": "m", "priority": true, "type": "guide", "description": "d", "language": "en"}
@@ -329,6 +330,10 @@ func TestWriteBodiesOnWire(t *testing.T) {
 			_, err := c.Save(SaveRequest{Database: "db", ArchivePath: "/o.zip"})
 			return err
 		}},
+		{"save_folder", map[string]any{"archive_path": nil, "folder_path": "/w", "git_init": true}, func(c *Client) error {
+			_, err := c.Save(SaveRequest{Database: "db", FolderPath: "/w", GitInit: true})
+			return err
+		}},
 		{"set_schema_text", map[string]any{"schema": "s"}, func(c *Client) error {
 			_, err := c.SetSchema(SetSchemaRequest{Database: "db", Schema: "s"})
 			return err
@@ -345,6 +350,10 @@ func TestWriteBodiesOnWire(t *testing.T) {
 			_, err := c.Resume(ResumeRequest{Database: "db", ArchivePath: "/a.zip", Replace: true})
 			return err
 		}},
+		{"resume_folder", map[string]any{"archive_path": nil, "folder_path": "/w", "replace": true}, func(c *Client) error {
+			_, err := c.Resume(ResumeRequest{Database: "db", FolderPath: "/w", Replace: true})
+			return err
+		}},
 		{"create_scope", map[string]any{"parent": "team", "name": "a"}, func(c *Client) error {
 			_, err := c.CreateScope(CreateScopeRequest{Database: "db", Parent: "team", Name: "a"})
 			return err
@@ -359,6 +368,10 @@ func TestWriteBodiesOnWire(t *testing.T) {
 		}},
 		{"get_page", map[string]any{"path": "p.md", "scope": "team/a"}, func(c *Client) error {
 			_, err := c.GetPage(GetPageRequest{Database: "db", Path: "p.md", Scope: "team/a"})
+			return err
+		}},
+		{"get_page_version", map[string]any{"path": "p.md", "version": float64(7)}, func(c *Client) error {
+			_, err := c.GetPage(GetPageRequest{Database: "db", Path: "p.md", Version: 7})
 			return err
 		}},
 		{"history", map[string]any{"path": "p.md", "scope": "team/a"}, func(c *Client) error {
@@ -430,6 +443,58 @@ func TestIngestText_MutationResponse(t *testing.T) {
 	}
 	if got.Tokens.Input != 5 || got.Tokens.Output != 6 || got.Tokens.Estimated {
 		t.Errorf("Tokens = %+v", got.Tokens)
+	}
+}
+
+// TestSave_GitState proves a folder save with git_init decodes the git state the wiki reports.
+func TestSave_GitState(t *testing.T) {
+	var rec captured
+	c := newTestClient(t, "test-key", http.StatusOK, `{"revision":"abcabcabcabc","git":"initialized"}`, &rec)
+
+	got, err := c.Save(SaveRequest{Database: "kb", FolderPath: "/w", GitInit: true})
+	if err != nil {
+		t.Fatalf("Save: %v", err)
+	}
+	if got.Git != "initialized" {
+		t.Errorf("Git = %q, want initialized", got.Git)
+	}
+}
+
+// TestResponseFields proves the not merged pages, answer images, database state and version id decode.
+func TestResponseFields(t *testing.T) {
+	cases := []struct {
+		name string
+		resp string
+		call func(*Client) (any, error)
+		want any
+	}{
+		{"not_merged", `{"not_merged":[{"path":"a.md","reason":"refused"}]}`, func(c *Client) (any, error) {
+			r, err := c.IngestText(IngestTextRequest{Database: "db", Name: "n", Content: "c"})
+			return r.NotMerged, err
+		}, []PageReason{{Path: "a.md", Reason: "refused"}}},
+		{"images", `{"answer":"a","images":[{"path":"img/a.png","media_type":"image/png","content":"aGk="}]}`, func(c *Client) (any, error) {
+			r, err := c.Query(QueryRequest{Database: "db", Query: "q"})
+			return r.Images, err
+		}, []AnswerImage{{Path: "img/a.png", MediaType: "image/png", Content: "aGk="}}},
+		{"database_info", `{"name":"db","source":"/w","standard_pages":"building","refresh_tokens":{"input":3,"output":4}}`, func(c *Client) (any, error) {
+			return c.GetDatabaseInfo(GetDatabaseInfoRequest{Name: "db"})
+		}, DatabaseInfo{Name: "db", Source: "/w", StandardPages: "building", RefreshTokens: Tokens{Input: 3, Output: 4}}},
+		{"history_id", `[{"id":7,"scope":"team"}]`, func(c *Client) (any, error) {
+			return c.History(HistoryRequest{Database: "db", Path: "p.md"})
+		}, []Version{{ID: 7, Scope: "team"}}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var rec captured
+			c := newTestClient(t, "test-key", http.StatusOK, tc.resp, &rec)
+			got, err := tc.call(c)
+			if err != nil {
+				t.Fatalf("%s: %v", tc.name, err)
+			}
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("got %+v, want %+v", got, tc.want)
+			}
+		})
 	}
 }
 
@@ -545,5 +610,28 @@ func TestErrorStatusCarriesBody(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "not found") {
 		t.Errorf("error = %q, want it to carry the response body", err)
+	}
+}
+
+// TestErrorStatusText proves a failed call carries the wiki's error message, and any other body as sent.
+func TestErrorStatusText(t *testing.T) {
+	cases := []struct {
+		name   string
+		status int
+		body   string
+		want   string
+	}{
+		{"wiki_error", http.StatusNotFound, `{"error":"database \"ghost\" not found"}`, `unexpected status code: 404 "database \"ghost\" not found"`},
+		{"other_body", http.StatusBadGateway, "bad gateway", `unexpected status code: 502 "bad gateway"`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var rec captured
+			c := newTestClient(t, "test-key", tc.status, tc.body, &rec)
+			_, err := c.GetDatabaseInfo(GetDatabaseInfoRequest{Name: "ghost"})
+			if err == nil || err.Error() != tc.want {
+				t.Errorf("error = %v, want %s", err, tc.want)
+			}
+		})
 	}
 }
