@@ -24,6 +24,7 @@ package wiki
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -101,6 +102,39 @@ func TestHealth_Error(t *testing.T) {
 	}
 	if ok {
 		t.Error("GetHealth() = true, want false on 500")
+	}
+}
+
+func TestHealthResponse(t *testing.T) {
+	var rec captured
+	c := newTestClient(t, "test-key", http.StatusOK, `{"status":"degraded","version":"v1.3.7","model":"unreachable"}`, &rec)
+
+	got, err := c.Health()
+	if err != nil {
+		t.Fatalf("Health: %v", err)
+	}
+	want := HealthResponse{Status: "degraded", Version: "v1.3.7", Model: "unreachable"}
+	if got != want {
+		t.Errorf("Health() = %+v, want %+v", got, want)
+	}
+	if rec.method != http.MethodGet {
+		t.Errorf("method = %s, want GET", rec.method)
+	}
+	if rec.path != "/api/v1/health" {
+		t.Errorf("path = %s, want /api/v1/health", rec.path)
+	}
+}
+
+func TestHealthResponse_Error(t *testing.T) {
+	var rec captured
+	c := newTestClient(t, "test-key", http.StatusUnauthorized, `{"status":"ok","version":"v1.3.7"}`, &rec)
+
+	got, err := c.Health()
+	if err == nil {
+		t.Fatal("Health() error = nil, want non-nil on 401")
+	}
+	if got != (HealthResponse{}) {
+		t.Errorf("Health() = %+v, want zero on 401", got)
 	}
 }
 
@@ -342,8 +376,12 @@ func TestWriteBodiesOnWire(t *testing.T) {
 			_, err := c.SetSchema(SetSchemaRequest{Database: "db", FilePath: "/p/schema.md"})
 			return err
 		}},
-		{"query", map[string]any{"scope": "team/a"}, func(c *Client) error {
+		{"query", map[string]any{"scope": "team/a", "answer_prompt": nil}, func(c *Client) error {
 			_, err := c.Query(QueryRequest{Database: "db", Query: "q", Scope: "team/a"})
+			return err
+		}},
+		{"query_answer_prompt", map[string]any{"scope": "team/a", "answer_prompt": "Answer with the value only."}, func(c *Client) error {
+			_, err := c.Query(QueryRequest{Database: "db", Query: "q", Scope: "team/a", AnswerPrompt: "Answer with the value only."})
 			return err
 		}},
 		{"resume", map[string]any{"archive_path": "/a.zip", "replace": true}, func(c *Client) error {
@@ -446,21 +484,7 @@ func TestIngestText_MutationResponse(t *testing.T) {
 	}
 }
 
-// TestSave_GitState proves a folder save with git_init decodes the git state the wiki reports.
-func TestSave_GitState(t *testing.T) {
-	var rec captured
-	c := newTestClient(t, "test-key", http.StatusOK, `{"revision":"abcabcabcabc","git":"initialized"}`, &rec)
-
-	got, err := c.Save(SaveRequest{Database: "kb", FolderPath: "/w", GitInit: true})
-	if err != nil {
-		t.Fatalf("Save: %v", err)
-	}
-	if got.Git != "initialized" {
-		t.Errorf("Git = %q, want initialized", got.Git)
-	}
-}
-
-// TestResponseFields proves the not merged pages, answer images, database state and version id decode.
+// TestResponseFields proves the not merged pages, answer images, database state, git state and version id decode.
 func TestResponseFields(t *testing.T) {
 	cases := []struct {
 		name string
@@ -479,6 +503,10 @@ func TestResponseFields(t *testing.T) {
 		{"database_info", `{"name":"db","source":"/w","standard_pages":"building","refresh_tokens":{"input":3,"output":4}}`, func(c *Client) (any, error) {
 			return c.GetDatabaseInfo(GetDatabaseInfoRequest{Name: "db"})
 		}, DatabaseInfo{Name: "db", Source: "/w", StandardPages: "building", RefreshTokens: Tokens{Input: 3, Output: 4}}},
+		{"git", `{"revision":"abcabcabcabc","git":"initialized"}`, func(c *Client) (any, error) {
+			r, err := c.Save(SaveRequest{Database: "kb", FolderPath: "/w", GitInit: true})
+			return r.Git, err
+		}, "initialized"},
 		{"history_id", `[{"id":7,"scope":"team"}]`, func(c *Client) (any, error) {
 			return c.History(HistoryRequest{Database: "db", Path: "p.md"})
 		}, []Version{{ID: 7, Scope: "team"}}},
@@ -613,7 +641,7 @@ func TestErrorStatusCarriesBody(t *testing.T) {
 	}
 }
 
-// TestErrorStatusText proves a failed call carries the wiki's error message, and any other body as sent.
+// TestErrorStatusText proves a failed call carries the wiki's error message, and any other body as sent, up to 64 KiB.
 func TestErrorStatusText(t *testing.T) {
 	cases := []struct {
 		name   string
@@ -623,6 +651,7 @@ func TestErrorStatusText(t *testing.T) {
 	}{
 		{"wiki_error", http.StatusNotFound, `{"error":"database \"ghost\" not found"}`, `unexpected status code: 404 "database \"ghost\" not found"`},
 		{"other_body", http.StatusBadGateway, "bad gateway", `unexpected status code: 502 "bad gateway"`},
+		{"long_body", http.StatusBadGateway, strings.Repeat("x", 1<<17), fmt.Sprintf("unexpected status code: 502 %q", strings.Repeat("x", 1<<16))},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

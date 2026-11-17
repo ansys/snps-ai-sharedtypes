@@ -154,11 +154,12 @@ type SetSchemaRequest struct {
 	FilePath string `json:"file_path"`
 }
 
-// QueryRequest asks a question against a database.
+// QueryRequest asks a question against a database, answered with AnswerPrompt when not blank and the database's answer prompt otherwise.
 type QueryRequest struct {
 	Database        string        `json:"database"`
 	Query           string        `json:"query"`
 	Scope           string        `json:"scope,omitempty"`
+	AnswerPrompt    string        `json:"answer_prompt,omitempty"`
 	ModelCategory   []string      `json:"model_category,omitempty"`
 	ModelIDs        []string      `json:"model_ids,omitempty"`
 	ModelOptions    *ModelOptions `json:"model_options,omitempty"`
@@ -215,13 +216,12 @@ type ListPagesRequest struct {
 	Scope    string `json:"scope,omitempty"`
 }
 
-// GetPageRequest reads one page as a scope sees it, root when the scope is empty.
+// GetPageRequest reads one page as a scope sees it, root when the scope is empty, at the History id in Version, the current page at zero.
 type GetPageRequest struct {
 	Database string `json:"database"`
 	Path     string `json:"path"`
 	Scope    string `json:"scope,omitempty"`
-	// Version is an id from History; zero reads the current page.
-	Version int64 `json:"version,omitempty"`
+	Version  int64  `json:"version,omitempty"`
 }
 
 // HistoryRequest lists the recorded versions of one page as a scope sees it, root when the scope is empty.
@@ -265,6 +265,15 @@ type ListChangeSetsRequest struct {
 	Database string `json:"database"`
 	Scope    string `json:"scope,omitempty"`
 	Since    string `json:"since,omitempty"`
+}
+
+// HealthResponse is the service state and version the health route reports.
+type HealthResponse struct {
+	// Status is ok or degraded.
+	Status  string `json:"status"`
+	Version string `json:"version"`
+	// Model is unreachable or refused when the model makes the service degraded.
+	Model string `json:"model,omitempty"`
 }
 
 // Tokens is the token accounting the server reports for an LLM-backed operation.
@@ -354,7 +363,7 @@ type MutationResponse struct {
 	NotMerged   []PageReason `json:"not_merged,omitempty"`
 	Replaced    Replacement  `json:"replaced,omitzero"`
 	Scopes      []ScopeCount `json:"scopes,omitempty"`
-	// Git is the state a save with git_init reports: initialized, existing or not found.
+	// Git is the state a save with GitInit reports: initialized, existing or not found.
 	Git string `json:"git,omitempty"`
 }
 

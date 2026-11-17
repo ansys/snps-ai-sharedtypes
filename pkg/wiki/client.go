@@ -99,6 +99,9 @@ func (client Client) post(u string, body any) (*http.Response, error) {
 	return client.httpClient.Do(req)
 }
 
+// maxErrorBody bounds the error body read into an error message.
+const maxErrorBody = 1 << 16
+
 // postJSON posts body to an /api/v1 operation and decodes the JSON response into T.
 func postJSON[T any](client Client, op string, body any) (T, error) {
 	var zero T
@@ -117,12 +120,12 @@ func postJSON[T any](client Client, op string, body any) (T, error) {
 	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		errBody, _ := io.ReadAll(resp.Body)
-		var e struct {
+		errBody, _ := io.ReadAll(io.LimitReader(resp.Body, maxErrorBody))
+		var msg struct {
 			Error string `json:"error"`
 		}
-		if json.Unmarshal(errBody, &e) == nil && e.Error != "" {
-			return zero, fmt.Errorf("unexpected status code: %v %q", resp.StatusCode, e.Error)
+		if json.Unmarshal(errBody, &msg) == nil && msg.Error != "" {
+			errBody = []byte(msg.Error)
 		}
 		return zero, fmt.Errorf("unexpected status code: %v %q", resp.StatusCode, errBody)
 	}
@@ -130,6 +133,34 @@ func postJSON[T any](client Client, op string, body any) (T, error) {
 	var r T
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		return zero, err
+	}
+
+	return r, nil
+}
+
+// Health returns the service state and version.
+func (client Client) Health() (HealthResponse, error) {
+	u, err := client.route("health")
+	if err != nil {
+		return HealthResponse{}, err
+	}
+	resp, err := client.get(u)
+	if err != nil {
+		return HealthResponse{}, err
+	}
+	defer func() {
+		if e := resp.Body.Close(); e != nil {
+			client.logger.Warn("could not close body")
+		}
+	}()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return HealthResponse{}, fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	}
+
+	var r HealthResponse
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return HealthResponse{}, err
 	}
 
 	return r, nil
