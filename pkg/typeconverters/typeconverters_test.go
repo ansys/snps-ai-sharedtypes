@@ -318,6 +318,10 @@ func TestRoundTrip(t *testing.T) {
 		{"Page", wiki.Page{Path: "meshing/sizing.md", Content: "use 1 mm"}, "Page"},
 		{"[]Scope", []wiki.Scope{{Path: "eng", Level: "department"}}, "[]Scope"},
 		{"[]PageEntry", []wiki.PageEntry{{Path: "meshing/sizing.md", Standard: false}}, "[]PageEntry"},
+		{"MutationResponse", wiki.MutationResponse{Revision: "r2", NotMerged: []wiki.PageReason{{Path: "meshing/sizing.md", Reason: "contradicts the page"}}}, "MutationResponse"},
+		{"Tokens", wiki.Tokens{Input: 120, Output: 30, Estimated: true}, "Tokens"},
+		{"[]AnswerImage", []wiki.AnswerImage{{Path: "meshing/layers.png", MediaType: "image/png", Content: "iVBORw0KGgo="}}, "[]AnswerImage"},
+		{"[]DatabaseInfo", []wiki.DatabaseInfo{{Name: "meshing", Description: "meshing guidelines", Revision: "r1"}}, "[]DatabaseInfo"},
 	}
 
 	for _, test := range tests {

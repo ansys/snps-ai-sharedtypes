@@ -254,6 +254,8 @@ func init() {
 		"DiffReport":           jsonMapConverter[wiki.DiffReport](),
 		"ResolveResponse":      jsonMapConverter[wiki.ResolveResponse](),
 		"ScopeDeletedResponse": jsonMapConverter[wiki.ScopeDeletedResponse](),
+		"MutationResponse":     jsonMapConverter[wiki.MutationResponse](),
+		"Tokens":               jsonMapConverter[wiki.Tokens](),
 
 		// Custom types - wiki (slices)
 		"[]Scope":          jsonSliceConverter[[]wiki.Scope](),
@@ -261,6 +263,8 @@ func init() {
 		"[]Version":        jsonSliceConverter[[]wiki.Version](),
 		"[]Conflict":       jsonSliceConverter[[]wiki.Conflict](),
 		"[]ChangeSetEntry": jsonSliceConverter[[]wiki.ChangeSetEntry](),
+		"[]AnswerImage":    jsonSliceConverter[[]wiki.AnswerImage](),
+		"[]DatabaseInfo":   jsonSliceConverter[[]wiki.DatabaseInfo](),
 
 		// Custom types - sharedtypes (structs)
 		"DbArrayFilter":            jsonMapConverter[sharedtypes.DbArrayFilter](),
