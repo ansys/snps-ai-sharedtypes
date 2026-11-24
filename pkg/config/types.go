@@ -182,6 +182,7 @@ type Config struct {
 	WIKI_STORAGE_DRIVER              string   `yaml:"WIKI_STORAGE_DRIVER" json:"WIKISTORAGEDRIVER"`
 	WIKI_STORAGE_DSN                 string   `yaml:"WIKI_STORAGE_DSN" json:"WIKISTORAGEDSN"`
 	WIKI_DB_PATH                     string   `yaml:"WIKI_DB_PATH" json:"WIKIDBPATH"`
+	WIKI_SHARE_PATH                  string   `yaml:"WIKI_SHARE_PATH" json:"WIKISHAREPATH"`
 	WIKI_SCOPE_LEVELS                []string `yaml:"WIKI_SCOPE_LEVELS" json:"WIKISCOPELEVELS"`
 	WIKI_SCOPE_APPROVAL              string   `yaml:"WIKI_SCOPE_APPROVAL" json:"WIKISCOPEAPPROVAL"`
 	WIKI_LLM_PROVIDER                string   `yaml:"WIKI_LLM_PROVIDER" json:"WIKILLMPROVIDER"`
